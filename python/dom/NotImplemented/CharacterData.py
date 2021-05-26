@@ -1,0 +1,2 @@
+class CharacterData:
+    pass

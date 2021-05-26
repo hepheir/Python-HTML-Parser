@@ -1,0 +1,2 @@
+class NodeList:
+    pass

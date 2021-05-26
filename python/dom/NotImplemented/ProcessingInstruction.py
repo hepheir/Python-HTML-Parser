@@ -1,0 +1,2 @@
+class ProcessingInstruction:
+    pass
