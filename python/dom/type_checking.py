@@ -4,6 +4,7 @@ from typing import Union, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from python.dom.NotImplemented import *
+    from python.dom.DOMException import DOMException
     from python.dom.DOMString import DOMString
 
     AnyNode = Union[
