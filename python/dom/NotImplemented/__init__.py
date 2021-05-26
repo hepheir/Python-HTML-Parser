@@ -9,7 +9,6 @@ from python.dom.NotImplemented.DocumentFragment import DocumentFragment
 from python.dom.NotImplemented.DocumentType import DocumentType
 from python.dom.NotImplemented.DOMException import DOMException
 from python.dom.NotImplemented.DOMImplementation import DOMImplementation
-from python.dom.NotImplemented.DOMString import DOMString
 from python.dom.NotImplemented.Element import Element
 from python.dom.NotImplemented.Entity import Entity
 from python.dom.NotImplemented.EntityReference import EntityReference
