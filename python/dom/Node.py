@@ -4,6 +4,7 @@ from typing import AnyStr, Optional
 
 from python.dom.DOMException import DOMException
 from python.dom.DOMString import DOMString
+from python.dom.NotImplemented.NodeList import NodeList
 from python.dom.type_checking import AnyNode
 
 
@@ -54,6 +55,8 @@ class Node:
         self._node_type: NodeType = node_type
         self._read_only: bool = read_only
         self._parent_node: Optional[AnyNode] # parent node should be set with `_set_parent_node` method.
+        self._child_nodes: NodeList = NodeList()
+
 
     @property
     def node_name(self) -> DOMString:
@@ -108,3 +111,9 @@ class Node:
                 warnings.warn('Document, DocumentFragment, '
                               'and Attr may not have a parent.')
         self._parent_node = parent_node
+
+    @property
+    def child_nodes(self) -> NodeList:
+        """A `NodeList` that contains all children of this node. If there are no children, this is a `NodeList` containing no nodes. The content of the returned `NodeList` is "live" in the sense that, for instance, changes to the children of the node object that it was created from are immediately reflected in the nodes returned by the `NodeList` accessors; it is not a static snapshot of the content of the node. This is true for every `NodeList`, including the ones returned by the `getElementsByTagName` method.
+        """
+        return self._child_nodes
