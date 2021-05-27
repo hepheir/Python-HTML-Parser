@@ -39,3 +39,6 @@ class Node:
     DOCUMENT_TYPE_NODE = NodeType.DOCUMENT_TYPE_NODE
     DOCUMENT_FRAGMENT_NODE = NodeType.DOCUMENT_FRAGMENT_NODE
     NOTATION_NODE = NodeType.NOTATION_NODE
+
+    def __init__(self) -> None:
+        pass
