@@ -1,8 +1,10 @@
 import enum
-from typing import AnyStr
+import warnings
+from typing import AnyStr, Optional
 
 from python.dom.DOMException import DOMException
 from python.dom.DOMString import DOMString
+from python.dom.type_checking import AnyNode
 
 
 class NodeType(enum.IntEnum):
@@ -46,9 +48,12 @@ class Node:
 
     def __init__(self,
                  node_type: NodeType,
+                 parent_node: Optional[AnyNode] = None,
                  read_only: bool = False) -> None:
+        self._set_parent_node(parent_node, node_type)
         self._node_type: NodeType = node_type
         self._read_only: bool = read_only
+        self._parent_node: Optional[AnyNode] # parent node should be set with `_set_parent_node` method.
 
     @property
     def node_name(self) -> DOMString:
@@ -78,3 +83,28 @@ class Node:
         """A code representing the type of the underlying object.
         """
         return self._node_type
+
+    @property
+    def parent_node(self) -> Optional[AnyNode]:
+        """The parent of this node. All nodes, except `Document`, `DocumentFragment`, and `Attr` may have a parent. However, if a node has just been created and not yet added to the tree, or if it has been removed from the tree, this is null.
+        """
+        return self._parent_node
+
+    def _set_parent_node(self,
+                         parent_node: Optional[AnyNode],
+                         node_type: Optional[NodeType] = None) -> None:
+        """Sets parent node of this node. If given `parent_node` is a node that cannot have its parent, this method will raise a warning.
+
+        Args:
+            parent_node: A node which is the parent of this node.
+            node_type: Optional; Value to be assumed as the type of this node. If `node_type` is not given, it will be replaced with the type of this node.
+        """
+        if node_type is None:
+            node_type = self.node_type
+        if parent_node is not None:
+            if self.node_type in [Node.DOCUMENT_NODE,
+                                  Node.DOCUMENT_FRAGMENT_NODE,
+                                  Node.ATTRIBUTE_NODE]:
+                warnings.warn('Document, DocumentFragment, '
+                              'and Attr may not have a parent.')
+        self._parent_node = parent_node
