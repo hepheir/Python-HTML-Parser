@@ -1,10 +1,11 @@
 import enum
-from python.dom.NotImplemented.NamedNodeMap import NamedNodeMap
 import warnings
 from typing import AnyStr, Optional
 
+from python.dom.NotImplemented.Document import Document
 from python.dom.DOMException import DOMException
 from python.dom.DOMString import DOMString
+from python.dom.NotImplemented.NamedNodeMap import NamedNodeMap
 from python.dom.NotImplemented.NodeList import NodeList
 from python.dom.type_checking import AnyNode
 
@@ -49,6 +50,7 @@ class Node:
     NOTATION_NODE = NodeType.NOTATION_NODE
 
     def __init__(self,
+                 owner_document: Document,
                  node_type: NodeType,
                  parent_node: Optional[AnyNode] = None,
                  read_only: bool = False) -> None:
@@ -59,6 +61,7 @@ class Node:
         self._child_nodes: NodeList = NodeList()
         self._previous_sibling: Optional[AnyNode] = None
         self._next_sibling: Optional[AnyNode] = None
+        self._owner_document: Document = owner_document
 
 
     @property
@@ -156,3 +159,9 @@ class Node:
         """A `NamedNodeMap` containing the attributes of this node (if it is an `Element`) or `None` otherwise.
         """
         raise NotImplementedError
+
+    @property
+    def owner_document(self) -> Optional[Document]:
+        """The `Document` object associated with this node. This is also the `Document` object used to create new nodes. When this node is a `Document` this is `None`.
+        """
+        return self._owner_document
