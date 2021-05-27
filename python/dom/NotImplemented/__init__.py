@@ -12,6 +12,7 @@ from python.dom.NotImplemented.Element import Element
 from python.dom.NotImplemented.Entity import Entity
 from python.dom.NotImplemented.EntityReference import EntityReference
 from python.dom.NotImplemented.NamedNodeMap import NamedNodeMap
+from python.dom.NotImplemented.Node import Node
 from python.dom.NotImplemented.NodeList import NodeList
 from python.dom.NotImplemented.Notation import Notation
 from python.dom.NotImplemented.ProcessingInstruction import ProcessingInstruction

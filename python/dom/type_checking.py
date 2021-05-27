@@ -6,7 +6,6 @@ if TYPE_CHECKING:
     from python.dom.NotImplemented import *
     from python.dom.DOMException import DOMException
     from python.dom.DOMString import DOMString
-    from python.dom.Node import Node
 
     AnyNode = Union[
         Node,
