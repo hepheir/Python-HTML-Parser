@@ -128,7 +128,7 @@ class Node:
     def first_child(self) -> Optional[AnyNode]:
         """The first child of this node. If there is no such node, this returns `None`.
         """
-        if self.child_nodes.length == 0:
+        if not self.child_nodes:
             return None
         else:
             return self.child_nodes.item(0)
@@ -137,7 +137,7 @@ class Node:
     def last_child(self) -> Optional[AnyNode]:
         """The last child of this node. If there is no such node, this returns `None`.
         """
-        if self.child_nodes.length == 0:
+        if not self.child_nodes:
             return None
         else:
             return self.child_nodes.item(self.child_nodes.length-1)
