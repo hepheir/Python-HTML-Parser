@@ -1,6 +1,7 @@
 import enum
 from typing import AnyStr
 
+from python.dom.DOMException import DOMException
 from python.dom.DOMString import DOMString
 
 
@@ -28,7 +29,7 @@ class Node:
 
     The `Node` interface is the primary datatype for the entire Document Object Model. It represents a single node in the document tree. While all objects implementing the `Node` interface expose methods for dealing with children, not all objects implementing the `Node` interface may have children. For example, `Text` nodes may not have children, and adding children to such nodes results in a `DOMException` being raised.
 
-    The attributes `node_name`, `nodeValue` and attributes are included as a mechanism to get at node information without casting down to the specific derived interface. In cases where there is no obvious mapping of these attributes for a specific `node_type` (e.g., `nodeValue` for an Element or `attributes` for a Comment), this returns `None`. Note that the specialized interfaces may contain additional and more convenient mechanisms to get and set the relevant information.
+    The attributes `node_name`, `node_value` and attributes are included as a mechanism to get at node information without casting down to the specific derived interface. In cases where there is no obvious mapping of these attributes for a specific `node_type` (e.g., `node_value` for an Element or `attributes` for a Comment), this returns `None`. Note that the specialized interfaces may contain additional and more convenient mechanisms to get and set the relevant information.
     """
     ATTRIBUTE_NODE = NodeType.ATTRIBUTE_NODE
     TEXT_NODE = NodeType.TEXT_NODE
@@ -53,6 +54,23 @@ class Node:
     def node_name(self) -> DOMString:
         """The name of this node, depending on its type.
         """
+        raise NotImplementedError
+
+    @property
+    def node_value(self) -> DOMString:
+        """The value of this node, depending on its type.
+
+        Raises:
+            DOMException:
+              - `NO_MODIFICATION_ALLOWED_ERR`: Raised when the node is readonly. (on setting)
+              - `DOMSTRING_SIZE_ERR`: Raised when it would return more characters than fit in a `DOMString` variable on the implementation platform. (on retrieval)
+        """
+        raise NotImplementedError
+
+    @node_value.setter
+    def node_value(self, value: AnyStr) -> None:
+        if self._read_only:
+            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
         raise NotImplementedError
 
     @property
