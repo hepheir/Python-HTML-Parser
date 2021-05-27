@@ -44,8 +44,10 @@ class Node:
     NOTATION_NODE = NodeType.NOTATION_NODE
 
     def __init__(self,
-                 node_type: NodeType) -> None:
+                 node_type: NodeType,
+                 read_only: bool = False) -> None:
         self._node_type: NodeType = node_type
+        self._read_only: bool = read_only
 
     @property
     def node_name(self) -> DOMString:
