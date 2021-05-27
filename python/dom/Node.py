@@ -1,4 +1,5 @@
 import enum
+from python.dom.NotImplemented.NamedNodeMap import NamedNodeMap
 import warnings
 from typing import AnyStr, Optional
 
@@ -149,3 +150,9 @@ class Node:
         """The node immediately following this node. If there is no such node, this returns `None`.
         """
         return self._next_sibling
+
+    @property
+    def attributes(self) -> Optional[NamedNodeMap]:
+        """A `NamedNodeMap` containing the attributes of this node (if it is an `Element`) or `None` otherwise.
+        """
+        raise NotImplementedError
