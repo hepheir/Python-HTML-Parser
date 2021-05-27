@@ -117,3 +117,21 @@ class Node:
         """A `NodeList` that contains all children of this node. If there are no children, this is a `NodeList` containing no nodes. The content of the returned `NodeList` is "live" in the sense that, for instance, changes to the children of the node object that it was created from are immediately reflected in the nodes returned by the `NodeList` accessors; it is not a static snapshot of the content of the node. This is true for every `NodeList`, including the ones returned by the `getElementsByTagName` method.
         """
         return self._child_nodes
+
+    @property
+    def first_child(self) -> Optional[AnyNode]:
+        """The first child of this node. If there is no such node, this returns `None`.
+        """
+        if self.child_nodes.length == 0:
+            return None
+        else:
+            return self.child_nodes.item(0)
+
+    @property
+    def last_child(self) -> Optional[AnyNode]:
+        """The last child of this node. If there is no such node, this returns `None`.
+        """
+        if self.child_nodes.length == 0:
+            return None
+        else:
+            return self.child_nodes.item(self.child_nodes.length-1)
