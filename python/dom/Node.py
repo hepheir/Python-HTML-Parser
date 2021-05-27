@@ -56,6 +56,8 @@ class Node:
         self._read_only: bool = read_only
         self._parent_node: Optional[AnyNode] # parent node should be set with `_set_parent_node` method.
         self._child_nodes: NodeList = NodeList()
+        self._previous_sibling: Optional[AnyNode] = None
+        self._next_sibling: Optional[AnyNode] = None
 
 
     @property
@@ -135,3 +137,15 @@ class Node:
             return None
         else:
             return self.child_nodes.item(self.child_nodes.length-1)
+
+    @property
+    def previous_sibling(self) -> Optional[AnyNode]:
+        """The node immediately preceding this node. If there is no such node, this returns `None`.
+        """
+        return self._previous_sibling
+
+    @property
+    def next_sibling(self) -> Optional[AnyNode]:
+        """The node immediately following this node. If there is no such node, this returns `None`.
+        """
+        return self._next_sibling
