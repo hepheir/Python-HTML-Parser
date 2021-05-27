@@ -1,2 +1,0 @@
-class NodeList:
-    pass
