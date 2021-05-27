@@ -5,4 +5,9 @@ class NodeList(list):
 
     The items in the `NodeList` are accessible via an integral index, starting from 0.
     """
-    pass
+
+    @property
+    def length(self) -> int:
+        """The number of nodes in the list. The range of valid child node indices is 0 to `length`-1 inclusive.
+        """
+        return len(self)
