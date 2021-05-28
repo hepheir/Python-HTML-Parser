@@ -2,6 +2,8 @@ from __future__ import absolute_import
 
 from typing import Union, TYPE_CHECKING
 
+AnyNode = None
+
 if TYPE_CHECKING:
     from python.dom.NotImplemented import *
     from python.dom.DOMException import DOMException
