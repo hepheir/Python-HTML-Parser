@@ -238,3 +238,51 @@ class Node:
                 return False
         else:
             return False
+
+    def insert_before(self,
+                      new_child: AnyNode,
+                      ref_child: Optional[AnyNode] = None) -> AnyNode:
+        """Inserts the node `new_child` before the existing child node `ref_child`. If `ref_child` is `None`, insert `new_child` at the end of the list of children.
+
+        If `new_child` is a `DocumentFragment` object, all of its children are inserted, in the same order, before `ref_child`. If the `new_child` is already in the tree, it is first removed.
+
+        Args:
+            new_child: The node to insert.
+            ref_child: The reference node, i.e., the node before which the new node must be inserted.
+
+        Returns:
+            The node being inserted.
+
+        Raises:
+            DOMException:
+            - `HIERARCHY_REQUEST_ERR`: Raised if this node is of a type that does not allow children of the type of the `new_child` node, or if the node to insert is one of this node's ancestors.
+            - `WRONG_DOCUMENT_ERR`: Raised if `new_child` was created from a different document than the one that created this node.
+            - `NO_MODIFICATION_ALLOWED_ERR`: Raised if this node is readonly.
+            - `NOT_FOUND_ERR`: Raised if `ref_child` is not a child of this node.
+        """
+        # Check if `new_child` is insertable.
+        if self._read_only:
+            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
+        if self.owner_document is not new_child.owner_document:
+            raise DOMException(DOMException.WRONG_DOCUMENT_ERR)
+        if not self._is_insertable(new_child):
+            raise DOMException(DOMException.HIERARCHY_REQUEST_ERR)
+        # If `new_child` is a `DocumentFragment` object, all of its children are inserted
+        if new_child.node_type == Node.DOCUMENT_FRAGMENT_NODE:
+            for child in new_child.child_nodes:
+                self.insert_before(child, ref_child)
+                return new_child
+        # If the `new_child` is already in the tree, it is first removed.
+        if new_child in self.child_nodes:
+            self.child_nodes.remove(new_child)
+        # If `ref_child` is `None`, insert `new_child` at the end of the list of children.
+        if ref_child is None:
+            self.child_nodes.append(new_child)
+        elif ref_child in self.child_nodes:
+            ref_index = self.child_nodes.index(ref_child)
+            self.child_nodes.insert(ref_index, new_child)
+        else:
+            raise DOMException(DOMException.NOT_FOUND_ERR)
+        # Bind `new_child` to this node.
+        new_child._set_parent_node(self)
+        return new_child
