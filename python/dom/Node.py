@@ -165,3 +165,76 @@ class Node:
         """The `Document` object associated with this node. This is also the `Document` object used to create new nodes. When this node is a `Document` this is `None`.
         """
         return self._owner_document
+
+    def _is_insertable(self,
+                       new_child: AnyNode) -> bool:
+        """Whether can have `new_child` as this node's child.
+
+        Args:
+            new_child: The node to check if insertable.
+
+        Returns:
+            Boolean that indicates if the `new_child` is insertable.
+        """
+        if self.node_type == NodeType.DOCUMENT_NODE:
+            if new_child.node_type == NodeType.ELEMENT_NODE:
+                for child in self.child_nodes:
+                    if child.node_type == NodeType.ELEMENT_NODE:
+                        return False
+                return True
+            elif new_child.node_type in [NodeType.PROCESSING_INSTRUCTION_NODE,
+                                         NodeType.COMMENT_NODE,
+                                         NodeType.DOCUMENT_TYPE_NODE]:
+                return True
+            else:
+                return False
+        elif self.node_type == NodeType.DOCUMENT_FRAGMENT_NODE:
+            if new_child.node_type in [NodeType.ELEMENT_NODE,
+                                       NodeType.PROCESSING_INSTRUCTION_NODE,
+                                       NodeType.COMMENT_NODE,
+                                       NodeType.TEXT_NODE,
+                                       NodeType.CDATA_SECTION_NODE,
+                                       NodeType.ENTITY_REFERENCE_NODE]:
+                return True
+            else:
+                return False
+        elif self.node_type == NodeType.DOCUMENT_TYPE_NODE:
+            return False
+        elif self.node_type == NodeType.ENTITY_REFERENCE_NODE:
+            if new_child.node_type in [NodeType.ELEMENT_NODE,
+                                       NodeType.PROCESSING_INSTRUCTION_NODE,
+                                       NodeType.COMMENT_NODE,
+                                       NodeType.TEXT_NODE,
+                                       NodeType.CDATA_SECTION_NODE,
+                                       NodeType.ENTITY_REFERENCE_NODE]:
+                return True
+            else:
+                return False
+        elif self.node_type == NodeType.ELEMENT_NODE:
+            if new_child.node_type in [NodeType.ELEMENT_NODE,
+                                       NodeType.TEXT_NODE,
+                                       NodeType.COMMENT_NODE,
+                                       NodeType.PROCESSING_INSTRUCTION_NODE,
+                                       NodeType.CDATA_SECTION_NODE,
+                                       NodeType.ENTITY_REFERENCE_NODE]:
+                return True
+            else:
+                return False
+        elif self.node_type == NodeType.ATTRIBUTE_NODE:
+            if new_child.node_type in [NodeType.TEXT_NODE,
+                                       NodeType.ENTITY_REFERENCE_NODE]:
+                return True
+            else:
+                return False
+        elif self.node_type == NodeType.ENTITY_NODE:
+            if new_child.node_type in [NodeType.ELEMENT_NODE,
+                                       NodeType.PROCESSING_INSTRUCTION_NODE,
+                                       NodeType.COMMENT_NODE,
+                                       NodeType.TEXT_NODE,
+                                       NodeType.CDATA_SECTION_NODE,
+                                       NodeType.ENTITY_REFERENCE_NODE]:
+                return True
+            else:
+                return False
+        else:
+            return False
