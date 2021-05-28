@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from typing import Optional
+from typing import Optional, Iterator
 
 from python.dom.type_checking import AnyNode
 
@@ -12,6 +12,9 @@ class NodeList(list):
 
     The items in the `NodeList` are accessible via an integral index, starting from 0.
     """
+
+    def __iter__(self) -> Iterator[AnyNode]:
+        return super().__iter__()
 
     @property
     def length(self) -> int:
