@@ -1,5 +1,7 @@
 # Python-HTML-Parser
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a3824ee9d3e943aab89af8727a51ca64)](https://www.codacy.com/gh/Hepheir/Python-HTML-Parser/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Hepheir/Python-HTML-Parser&amp;utm_campaign=Badge_Grade)
+
 ## 개요
 
 beautifulsoup으로는 만족못해서 만들어보는 Python3.9 버전의 HTML 파싱기
