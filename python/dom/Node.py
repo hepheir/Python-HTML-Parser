@@ -176,6 +176,11 @@ class Node:
         Returns:
             Boolean that indicates if the `new_child` is insertable.
         """
+        if new_child.node_type == NodeType.DOCUMENT_FRAGMENT_NODE:
+            for child in new_child.child_nodes:
+                if not self._is_insertable(child):
+                    return False
+            return True
         if self.node_type == NodeType.DOCUMENT_NODE:
             if new_child.node_type == NodeType.ELEMENT_NODE:
                 for child in self.child_nodes:
@@ -271,7 +276,7 @@ class Node:
         if new_child.node_type == Node.DOCUMENT_FRAGMENT_NODE:
             for child in new_child.child_nodes:
                 self.insert_before(child, ref_child)
-                return new_child
+            return new_child
         # If the `new_child` is already in the tree, it is first removed.
         if new_child in self.child_nodes:
             self.child_nodes.remove(new_child)
