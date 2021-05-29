@@ -166,19 +166,19 @@ class Node:
         """
         return self._owner_document
 
-    def _is_insertable(self,
-                       new_child: AnyNode) -> bool:
-        """Whether can have `new_child` as this node's child.
+    def _is_allowed_child_type(self, new_child: AnyNode) -> bool:
+        """Whether a node can be the child of this node.
+        (only checks with the type of nodes.)
 
         Args:
-            new_child: The node to check if insertable.
+            new_child: The node to check insertable.
 
         Returns:
-            Boolean that indicates if the `new_child` is insertable.
+            Boolean that indicates if the `new_child` is an allowed type.
         """
         if new_child.node_type == NodeType.DOCUMENT_FRAGMENT_NODE:
             for child in new_child.child_nodes:
-                if not self._is_insertable(child):
+                if not self._is_allowed_child_type(child):
                     return False
             return True
         if self.node_type == NodeType.DOCUMENT_NODE:
@@ -244,6 +244,30 @@ class Node:
         else:
             return False
 
+
+    def _check_insertable(self, new_child: AnyNode) -> None:
+        """Whether a node can be the child of this node. Raises `DOMException` if the given node is not insertable.
+
+        Args:
+            new_child: The node to check insertable.
+
+        Returns:
+            This method does not return any value.
+
+        Raises:
+            DOMException:
+            - `HIERARCHY_REQUEST_ERR`: Raised if this node is of a type that does not allow children of the type of the `new_child` node, or if the node to insert is one of this node's ancestors.
+            - `WRONG_DOCUMENT_ERR`: Raised if `new_child` was created from a different document than the one that created this node.
+            - `NO_MODIFICATION_ALLOWED_ERR`: Raised if this node is readonly.
+        """
+        if self._read_only:
+            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
+        if self.owner_document is not new_child.owner_document:
+            raise DOMException(DOMException.WRONG_DOCUMENT_ERR)
+        if not self._is_allowed_child_type(new_child):
+            raise DOMException(DOMException.HIERARCHY_REQUEST_ERR)
+
+
     def insert_before(self,
                       new_child: AnyNode,
                       ref_child: Optional[AnyNode] = None) -> AnyNode:
@@ -265,13 +289,7 @@ class Node:
             - `NO_MODIFICATION_ALLOWED_ERR`: Raised if this node is readonly.
             - `NOT_FOUND_ERR`: Raised if `ref_child` is not a child of this node.
         """
-        # Check if `new_child` is insertable.
-        if self._read_only:
-            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
-        if self.owner_document is not new_child.owner_document:
-            raise DOMException(DOMException.WRONG_DOCUMENT_ERR)
-        if not self._is_insertable(new_child):
-            raise DOMException(DOMException.HIERARCHY_REQUEST_ERR)
+        self._check_insertable(new_child)
         # If `new_child` is a `DocumentFragment` object, all of its children are inserted
         if new_child.node_type == Node.DOCUMENT_FRAGMENT_NODE:
             for child in new_child.child_nodes:
