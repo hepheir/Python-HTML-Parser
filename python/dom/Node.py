@@ -57,12 +57,12 @@ class Node:
         self._set_parent_node(parent_node, node_type)
         self._node_type: NodeType = node_type
         self._read_only: bool = read_only
-        self._parent_node: Optional[AnyNode] # parent node should be set with `_set_parent_node` method.
+        # parent node should be set with `_set_parent_node` method.
+        self._parent_node: Optional[AnyNode]
         self._child_nodes: NodeList = NodeList()
         self._previous_sibling: Optional[AnyNode] = None
         self._next_sibling: Optional[AnyNode] = None
         self._owner_document: Document = owner_document
-
 
     @property
     def node_name(self) -> DOMString:
@@ -76,8 +76,8 @@ class Node:
 
         Raises:
             DOMException:
-              - `NO_MODIFICATION_ALLOWED_ERR`: Raised when the node is readonly. (on setting)
-              - `DOMSTRING_SIZE_ERR`: Raised when it would return more characters than fit in a `DOMString` variable on the implementation platform. (on retrieval)
+            - `NO_MODIFICATION_ALLOWED_ERR`: Raised when the node is readonly. (on setting)
+            - `DOMSTRING_SIZE_ERR`: Raised when it would return more characters than fit in a `DOMString` variable on the implementation platform. (on retrieval)
         """
         raise NotImplementedError
 
@@ -176,6 +176,7 @@ class Node:
         Returns:
             Boolean that indicates if the `new_child` is an allowed type.
         """
+        # TODO: Make this method abstract.
         if new_child.node_type == NodeType.DOCUMENT_FRAGMENT_NODE:
             for child in new_child.child_nodes:
                 if not self._is_allowed_child_type(child):
@@ -244,7 +245,6 @@ class Node:
         else:
             return False
 
-
     def _check_insertable(self, new_child: AnyNode) -> None:
         """Whether a node can be the child of this node. Raises `DOMException` if the given node is not insertable.
 
@@ -262,11 +262,10 @@ class Node:
         """
         if self._read_only:
             raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
-        if self.owner_document is not new_child.owner_document:
+        if new_child.owner_document is not self.owner_document:
             raise DOMException(DOMException.WRONG_DOCUMENT_ERR)
         if not self._is_allowed_child_type(new_child):
             raise DOMException(DOMException.HIERARCHY_REQUEST_ERR)
-
 
     def insert_before(self,
                       new_child: AnyNode,
