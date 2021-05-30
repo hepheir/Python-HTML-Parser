@@ -5,7 +5,6 @@ from typing import Union, TYPE_CHECKING
 AnyNode = None
 
 if TYPE_CHECKING:
-    from python.dom.NotImplemented import *
     from python.dom.DOMException import DOMException
     from python.dom.DOMString import DOMString
     from python.dom.NodeList import NodeList

@@ -3,7 +3,7 @@ from typing import AnyStr, Optional
 
 from python.dom.DOMException import DOMException
 from python.dom.DOMString import DOMString
-from python.dom.NotImplemented.NamedNodeMap import NamedNodeMap
+from python.dom.NamedNodeMap import NamedNodeMap
 from python.dom.NodeList import NodeList
 from python.dom.type_checking import AnyNode
 from python.dom.node.Document import Document
