@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 from python.dom.node.Node import Node
+from python.dom.node.NodeType import NodeType
 from python.dom.node.Document import Document
 from python.dom.node.DocumentFragment import DocumentFragment
 from python.dom.node.DocumentType import DocumentType
