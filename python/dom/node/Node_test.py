@@ -4,8 +4,7 @@ from __future__ import annotations
 import unittest
 
 from python.dom.DOMException import DOMException
-from python.dom.NotImplemented.Document import Document
-from python.dom.Node import Node
+from python.dom.node import Node, Document
 
 
 class Test_Node(unittest.TestCase):
