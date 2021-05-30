@@ -1,12 +1,10 @@
 from __future__ import absolute_import
-from __future__ import annotations
 
 from typing import Optional
 
-from python.dom.node.Node import Node
-from python.dom.node.NodeType import NodeType
-
-from python.dom.type_checking import AnyNode, Document
+from python.dom.core.interface.fundamental.Node import Node
+from python.dom.core.interface.fundamental.Node import NodeType
+from python.dom.core.type import AnyNode, Document
 
 
 class Attr(Node):
@@ -23,8 +21,8 @@ class Attr(Node):
 
     def __init__(self,
                  owner_document: Document,
-                 parent_node: Optional[AnyNode],
-                 read_only: bool) -> None:
+                 parent_node: Optional[AnyNode] = None,
+                 read_only: bool = False) -> None:
         super().__init__(owner_document=owner_document,
                          node_type=NodeType.ATTRIBUTE_NODE,
                          parent_node=parent_node,

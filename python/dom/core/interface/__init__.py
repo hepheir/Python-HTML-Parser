@@ -19,9 +19,6 @@ from python.dom.core.interface.fundamental.Node import Node
 from python.dom.core.interface.fundamental.Node import NodeType
 from python.dom.core.interface.fundamental.NodeList import NodeList
 from python.dom.core.interface.fundamental.Text import Text
-from python.dom.core.type import AnyNode
-from python.dom.core.type import DOMString
-import python.dom.core.type as type
 
 
 del absolute_import

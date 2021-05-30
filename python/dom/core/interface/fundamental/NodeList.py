@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 from typing import Optional, Iterator
 
-from python.dom.type_checking import AnyNode
+from python.dom.core.type import AnyNode
 
 
 class NodeList(list):

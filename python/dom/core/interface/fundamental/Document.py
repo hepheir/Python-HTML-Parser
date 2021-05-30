@@ -1,8 +1,7 @@
 from __future__ import absolute_import
-from __future__ import annotations
 
-from python.dom.node.Node import Node
-from python.dom.node.NodeType import NodeType
+from python.dom.core.interface.fundamental.Node import Node
+from python.dom.core.interface.fundamental.Node import NodeType
 
 
 class Document(Node):

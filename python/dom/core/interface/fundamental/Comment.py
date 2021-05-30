@@ -1,12 +1,10 @@
 from __future__ import absolute_import
-from __future__ import annotations
 
 from typing import Optional
 
-from python.dom.node.Node import Node
-from python.dom.node.NodeType import NodeType
-
-from python.dom.type_checking import AnyNode, Document
+from python.dom.core.interface.fundamental.Node import Node
+from python.dom.core.interface.fundamental.Node import NodeType
+from python.dom.core.type import AnyNode, Document
 
 
 class Comment(Node):

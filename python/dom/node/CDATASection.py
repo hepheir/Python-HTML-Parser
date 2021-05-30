@@ -1,2 +1,0 @@
-class CDATASection:
-    pass

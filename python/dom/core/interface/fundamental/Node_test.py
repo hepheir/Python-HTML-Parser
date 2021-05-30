@@ -1,17 +1,20 @@
 from __future__ import absolute_import
-from __future__ import annotations
 
 import unittest
 
-from python.dom.DOMException import DOMException
-from python.dom.node import Node, Document
+from python.dom import Attr
+from python.dom import Document
+from python.dom import DocumentFragment
+from python.dom import DOMException
+from python.dom import Element
+from python.dom import Text
 
 
 class Test_Node(unittest.TestCase):
     def testInsertBefore_withoutRefNode(self):
         document = Document()
-        parent_node = Node(document, Node.ELEMENT_NODE)
-        child_node = Node(document, Node.ELEMENT_NODE)
+        parent_node = Element(document)
+        child_node = Element(document)
         # Testing
         parent_node.insert_before(child_node)
         self.assertEqual(child_node.parent_node, parent_node)
@@ -20,9 +23,9 @@ class Test_Node(unittest.TestCase):
 
     def testInsertBefore_withRefNode(self):
         document = Document()
-        parent_node = Node(document, Node.ELEMENT_NODE)
-        first_child_node = Node(document, Node.ELEMENT_NODE)
-        second_child_node = Node(document, Node.ELEMENT_NODE)
+        parent_node = Element(document)
+        first_child_node = Element(document)
+        second_child_node = Element(document)
         # Following task should've been tested via `testInsertBefore_withoutRefNode()`.
         parent_node.insert_before(second_child_node)
         # Testing
@@ -34,9 +37,9 @@ class Test_Node(unittest.TestCase):
 
     def testInsertBefore_insertExistingChild(self):
         document = Document()
-        parent_node = Node(document, Node.ELEMENT_NODE)
-        first_child_node = Node(document, Node.ELEMENT_NODE)
-        second_child_node = Node(document, Node.ELEMENT_NODE)
+        parent_node = Element(document)
+        first_child_node = Element(document)
+        second_child_node = Element(document)
         # Following tasks should've been tested via `testInsertBefore_withoutRefNode()`.
         parent_node.insert_before(first_child_node)
         parent_node.insert_before(second_child_node)
@@ -49,10 +52,10 @@ class Test_Node(unittest.TestCase):
 
     def testInsertBefore_insertDocumentFragmentNode(self):
         document = Document()
-        parent_node = Node(document, Node.ELEMENT_NODE)
-        df_node = Node(document, Node.DOCUMENT_FRAGMENT_NODE)
-        first_child_node = Node(document, Node.ELEMENT_NODE)
-        second_child_node = Node(document, Node.ELEMENT_NODE)
+        parent_node = Element(document)
+        df_node = DocumentFragment(document)
+        first_child_node = Element(document)
+        second_child_node = Element(document)
         # Following tasks should've been tested via `testInsertBefore_withoutRefNode()`.
         df_node.insert_before(first_child_node)
         df_node.insert_before(second_child_node)
@@ -64,9 +67,9 @@ class Test_Node(unittest.TestCase):
 
     def testInsertBefore_raises_HIERARCHY_REQUEST_ERR(self):
         document = Document()
-        parent_node = Node(document, Node.ATTRIBUTE_NODE)
-        child_node = Node(document, Node.TEXT_NODE)
-        child_node_not_allowed = Node(document, Node.ELEMENT_NODE)
+        parent_node = Attr(document)
+        child_node = Text(document)
+        child_node_not_allowed = Element(document)
         # Following task should've been tested via `testInsertBefore_withoutRefNode()`.
         parent_node.insert_before(child_node)
         # Testing: Not allowed type of child node.
@@ -89,8 +92,8 @@ class Test_Node(unittest.TestCase):
     def testInsertBefore_raises_WRONG_DOCUMENT_ERR(self):
         document_1 = Document()
         document_2 = Document()
-        parent_node = Node(document_1, Node.ELEMENT_NODE)
-        child_node = Node(document_2, Node.ELEMENT_NODE)
+        parent_node = Element(document_1)
+        child_node = Element(document_2)
         try:
             parent_node.insert_before(child_node)
         except DOMException as e:
@@ -101,8 +104,8 @@ class Test_Node(unittest.TestCase):
 
     def testInsertBefore_raises_NO_MODIFICATION_ALLOWED_ERR(self):
         document = Document()
-        readonly_node = Node(document, Node.ELEMENT_NODE, read_only=True)
-        child_node = Node(document, Node.ELEMENT_NODE)
+        readonly_node = Element(document, read_only=True)
+        child_node = Element(document)
         try:
             readonly_node.insert_before(child_node)
         except DOMException as e:
@@ -113,9 +116,9 @@ class Test_Node(unittest.TestCase):
 
     def testInsertBefore_raises_NOT_FOUND_ERR(self):
         document = Document()
-        parent_node = Node(document, Node.ELEMENT_NODE)
-        child_node = Node(document, Node.ELEMENT_NODE)
-        wrong_ref_node = Node(document, Node.ELEMENT_NODE)
+        parent_node = Element(document)
+        child_node = Element(document)
+        wrong_ref_node = Element(document)
         # Testing
         try:
             parent_node.insert_before(child_node, wrong_ref_node)

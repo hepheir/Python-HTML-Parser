@@ -1,13 +1,34 @@
-import warnings
-from typing import AnyStr, Optional
+from __future__ import absolute_import
 
-from python.dom.DOMException import DOMException
-from python.dom.DOMString import DOMString
-from python.dom.NamedNodeMap import NamedNodeMap
-from python.dom.NodeList import NodeList
-from python.dom.type_checking import AnyNode
-from python.dom.node.Document import Document
-from python.dom.node.NodeType import NodeType
+import enum
+import warnings
+from typing import Optional
+
+from python.dom.core.interface.fundamental.DOMException import DOMException
+from python.dom.core.interface.fundamental.NamedNodeMap import NamedNodeMap
+from python.dom.core.interface.fundamental.NodeList import NodeList
+from python.dom.core.type import AnyNode
+from python.dom.core.type import Document
+from python.dom.core.type import DOMString
+
+
+class NodeType(enum.IntEnum):
+    """Definition group `NodeType`
+
+    An integer indicating which type of node this is.
+    """
+    ELEMENT_NODE = 1  # The node is a `Element`.
+    ATTRIBUTE_NODE = 2  # The node is an `Attr`.
+    TEXT_NODE = 3  # The node is a `Text` node.
+    CDATA_SECTION_NODE = 4  # The node is a `CDATASection`.
+    ENTITY_REFERENCE_NODE = 5  # The node is an `EntityReference`.
+    ENTITY_NODE = 6  # The node is an `Entity`.
+    PROCESSING_INSTRUCTION_NODE = 7  # The node is a `ProcessingInstruction`.
+    COMMENT_NODE = 8  # The node is a `Comment`.
+    DOCUMENT_NODE = 9  # The node is a `Document`.
+    DOCUMENT_TYPE_NODE = 10  # The node is a `DocumentType`.
+    DOCUMENT_FRAGMENT_NODE = 11  # The node is a `DocumentFragment`.
+    NOTATION_NODE = 12  # The node is a `Notation`.
 
 
 class Node:
@@ -51,7 +72,7 @@ class Node:
         raise NotImplementedError
 
     @node_value.setter
-    def node_value(self, value: AnyStr) -> None:
+    def node_value(self, value: DOMString) -> None:
         if self._read_only:
             raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
         raise NotImplementedError
