@@ -3,3 +3,4 @@
 
 # Bring in subpackages.
 from w3.python.core import DOMException
+from w3.python.core import DOMImplementation
