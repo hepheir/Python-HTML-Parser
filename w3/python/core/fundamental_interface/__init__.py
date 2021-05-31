@@ -6,3 +6,4 @@ The interfaces within this section are considered fundamental, and must be fully
 from __future__ import absolute_import
 
 from w3.python.core.fundamental_interface.DOMException import DOMException
+from w3.python.core.fundamental_interface.DOMImplementation import DOMImplementation
