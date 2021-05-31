@@ -1,0 +1,2 @@
+# Python-HTML-Parser
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ca00dac3dd2342a79f930e286bcd5286)](https://app.codacy.com/gh/Hepheir/Python-HTML-Parser?utm_source=github.com&utm_medium=referral&utm_content=Hepheir/Python-HTML-Parser&utm_campaign=Badge_Grade_Settings)
