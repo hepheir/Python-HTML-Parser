@@ -65,10 +65,11 @@ class Node:
                  read_only: bool = False) -> None:
         if node_value is None:
             node_value = ''
-        self._read_only = bool(read_only)
+        self._read_only = False  # Allow to modify only while initiating.
         self._set_node_type(node_type)
         self._set_node_name(node_name)
         self._set_node_value(node_value)
+        self._read_only = bool(read_only)
         # Attributes
         self._node_name: DOMString
         self._node_value: DOMString
