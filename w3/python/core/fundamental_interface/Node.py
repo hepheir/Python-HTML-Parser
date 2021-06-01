@@ -59,11 +59,13 @@ class Node:
     """
 
     def __init__(self,
+                 node_type: NodeType,
                  node_name: DOMString,
                  node_value: Optional[DOMString] = None,
                  read_only: bool = False) -> None:
         if node_value is None:
             node_value = ''
+        self._set_node_type(node_type)
         self._set_node_name(node_name)
         self._set_node_value(node_value)
         self._read_only = bool(read_only)
@@ -117,3 +119,17 @@ class Node:
         """
         self._check_modifiable()
         self._node_value = DOMString(value)
+
+    @property
+    def node_type(self) -> NodeType:
+        """Read only; A code representing the type of the underlying object, as defined in `NodeType`.
+        """
+        return self._node_type
+
+    def _set_node_type(self, node_type: NodeType) -> None:
+        """Indirect accessor to set the 'node_type' property.
+        """
+        if node_type not in NodeType:
+            raise ValueError(f'{node_type} is not a valid code '
+                             'for a node type.')
+        self._node_type = node_type
