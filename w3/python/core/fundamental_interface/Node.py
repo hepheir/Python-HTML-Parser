@@ -1,5 +1,7 @@
 import enum
 
+from w3.python.core.type import DOMString
+
 
 class NodeType(enum.IntEnum):
     """Definition group `NodeType`
@@ -53,4 +55,20 @@ class Node:
         attributes: A `NamedNodeMap` containing the attributes of this node.
         owner_document: The `Document` object associated with this node.
     """
-    pass
+
+    def __init__(self,
+                 node_name: DOMString) -> None:
+        self._set_node_name(node_name)
+        # Attributes
+        self._node_name: DOMString
+
+    @property
+    def node_name(self) -> DOMString:
+        """Read only; The name of this node, depending on its type.
+        """
+        return self._node_name
+
+    def _set_node_name(self, name: DOMString) -> None:
+        """Indirect accessor to set the 'node_name' property.
+        """
+        self._node_name = DOMString(name)
