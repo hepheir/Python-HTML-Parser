@@ -1,4 +1,5 @@
 import enum
+from typing import Optional
 
 from w3.python.core.fundamental_interface.DOMException import DOMException
 from w3.python.core.type import DOMString
@@ -59,11 +60,16 @@ class Node:
 
     def __init__(self,
                  node_name: DOMString,
+                 node_value: Optional[DOMString] = None,
                  read_only: bool = False) -> None:
+        if node_value is None:
+            node_value = ''
         self._set_node_name(node_name)
+        self._set_node_value(node_value)
         self._read_only = bool(read_only)
         # Attributes
         self._node_name: DOMString
+        self._node_value: DOMString
         self._read_only: bool
 
     def _check_modifiable(self) -> None:
@@ -86,3 +92,28 @@ class Node:
         """Indirect accessor to set the 'node_name' property.
         """
         self._node_name = DOMString(name)
+
+    @property
+    def node_value(self) -> DOMString:
+        """The value of this node, depending on its type.
+
+        Raises:
+            DOMException:
+            - `NO_MODIFICATION_ALLOWED_ERR`: Raised when the node is readonly. (on setting)
+            - `DOMSTRING_SIZE_ERR`: Raised when it would return more characters than fit in a `DOMString` variable on the implementation platform. (on retrieval)
+        """
+        return self._node_value
+
+    @node_value.setter
+    def node_value(self, value: DOMString) -> None:
+        self._set_node_value(value)
+
+    def _set_node_value(self, value: DOMString) -> None:
+        """Indirect accessor to set the 'node_value' property.
+
+        Raises:
+            DOMException:
+            - `NO_MODIFICATION_ALLOWED_ERR`: Raised when the node is readonly.
+        """
+        self._check_modifiable()
+        self._node_value = DOMString(value)
