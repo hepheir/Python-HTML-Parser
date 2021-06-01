@@ -1,5 +1,6 @@
 import enum
 
+from w3.python.core.fundamental_interface.DOMException import DOMException
 from w3.python.core.type import DOMString
 
 
@@ -57,10 +58,23 @@ class Node:
     """
 
     def __init__(self,
-                 node_name: DOMString) -> None:
+                 node_name: DOMString,
+                 read_only: bool = False) -> None:
         self._set_node_name(node_name)
+        self._read_only = bool(read_only)
         # Attributes
         self._node_name: DOMString
+        self._read_only: bool
+
+    def _check_modifiable(self) -> None:
+        """Checks if this node is modifiable.
+
+        Raises:
+            DOMException:
+            - `NO_MODIFICATION_ALLOWED_ERR`: Raised when the node is readonly.
+        """
+        if self._read_only:
+            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
 
     @property
     def node_name(self) -> DOMString:
