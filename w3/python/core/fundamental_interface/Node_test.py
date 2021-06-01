@@ -26,7 +26,7 @@ class Test_Node(unittest.TestCase):
             self.assertEqual(node.node_type, node_type)
 
     def testNodeType_setWrongTypes(self):
-        for node_type in [-1, None, 'hi', Node]:
+        for node_type in [-1, None, 'hi', Node, True, NodeType, 'DOCUMENT_NODE']:
             with self.assertRaises(TypeError):
                 Node(node_type=node_type,
                      node_name='')
