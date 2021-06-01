@@ -23,7 +23,7 @@ class Test_Node(unittest.TestCase):
         for node_type in NodeType:
             node = Node(node_type=node_type,
                         node_name='')
-            self.assertEqual(node._node_type, node_type)
+            self.assertEqual(node.node_type, node_type)
 
     def testNodeType_setWrongTypes(self):
         for node_type in [-1, None, 'hi', Node]:
