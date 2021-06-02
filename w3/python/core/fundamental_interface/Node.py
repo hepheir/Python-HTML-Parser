@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import enum
-from typing import Optional, TypeVar
+from typing import Optional
 
 from w3.python.core.fundamental_interface.DOMException import DOMException
 from w3.python.core.type import DOMString
