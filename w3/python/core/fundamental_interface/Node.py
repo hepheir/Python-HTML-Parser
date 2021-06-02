@@ -157,4 +157,4 @@ class Node:
             self._parent_node = parent_node
 
 
-_AnyNode = TypeVar('_AnyNode', Node)
+_AnyNode = Node
