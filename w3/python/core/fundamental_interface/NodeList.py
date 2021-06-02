@@ -1,9 +1,7 @@
-from typing import Optional
-
-from w3.python.core.fundamental_interface.Node import Node
+from typing import Any, Optional
 
 
-_AnyNode = Node
+_AnyNode = Any
 
 class NodeList(list):
     """Interface NodeList
