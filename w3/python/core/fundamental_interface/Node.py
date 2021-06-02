@@ -191,5 +191,34 @@ class Node:
             return None
         return self.child_nodes.item(self.child_nodes.length-1)
 
+    @property
+    def previous_sibling(self) -> Optional[_AnyNode]:
+        """The node immediately preceding this node. If there is no such node, this returns `None`.
+        """
+        if self.parent_node is None:
+            return None
+        if self.parent_node.first_child is self:
+            return None
+        nth_child = self._nth_child_of_parent()
+        return self.parent_node.child_nodes.item(nth_child-1)
+
+    @property
+    def next_sibling(self) -> Optional[_AnyNode]:
+        """The node immediately following this node. If there is no such node, this returns `None`.
+        """
+        if self.parent_node is None:
+            return None
+        if self.parent_node.last_child is self:
+            return None
+        nth_child = self._nth_child_of_parent()
+        return self.parent_node.child_nodes.item(nth_child+1)
+
+    def _nth_child_of_parent(self) -> Optional[int]:
+        """Accessor that indicates how many siblings are there preceding this node. if there is no such parent node, this returns `None`.
+        """
+        if self.parent_node is None:
+            return None
+        return self.parent_node.child_nodes.index(self)
+
 
 _AnyNode = Node
