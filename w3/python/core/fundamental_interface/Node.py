@@ -71,6 +71,7 @@ class Node:
         self._set_node_value(node_value)
         self._read_only = bool(read_only)
         # Attributes
+        self._node_type: NodeType
         self._node_name: DOMString
         self._node_value: DOMString
         self._read_only: bool
