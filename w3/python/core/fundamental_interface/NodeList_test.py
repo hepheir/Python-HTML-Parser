@@ -36,6 +36,27 @@ class Test_NodeList(unittest.TestCase):
         for list_elem in node_list:
             self.assertEqual(list_elem, next(node_iter))
 
+    def testBool(self):
+        # Empty `NodeList` should equal False.
+        node_list = NodeList()
+        self.assertFalse(node_list)
+        # `NodeList` with items should equal True.
+        node_list = NodeList(_make_nodes(2))
+        self.assertTrue(node_list)
+
+    def testGetItem(self):
+        nodes = [*_make_nodes(4)]
+        node_list = NodeList(nodes)
+        for i in range(4):
+            self.assertEqual(node_list[i], nodes[i])
+
+    def testSetItem(self):
+        node = Node(NodeType.TEXT_NODE,
+                    '#text')
+        node_list = NodeList(_make_nodes(4))
+        node_list[2] = node
+        self.assertEqual(node_list[2], node)
+
     def testItem_inSize(self):
         nodes = [*_make_nodes(5)]
         node_list = NodeList(nodes)
