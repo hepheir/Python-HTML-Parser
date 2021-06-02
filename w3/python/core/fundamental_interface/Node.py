@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import enum
-from typing import Optional
+from typing import Iterable, Optional
 
 from w3.python.core.fundamental_interface.DOMException import DOMException
+from w3.python.core.fundamental_interface.NodeList import NodeList
 from w3.python.core.type import DOMString
 
 
@@ -65,6 +66,7 @@ class Node:
                  node_name: DOMString,
                  node_value: Optional[DOMString] = None,
                  parent_node: Optional[_AnyNode] = None,
+                 child_nodes: Optional[Iterable[_AnyNode]] = None,
                  read_only: bool = False) -> None:
         if node_value is None:
             node_value = ''
@@ -73,12 +75,14 @@ class Node:
         self._set_node_name(node_name)
         self._set_node_value(node_value)
         self._set_parent_node(parent_node)
+        self._init_child_nodes(child_nodes)
         self._read_only = bool(read_only)
         # Attributes
         self._node_type: NodeType
         self._node_name: DOMString
         self._node_value: DOMString
         self._parent_node: _AnyNode
+        self._child_nodes: NodeList
         self._read_only: bool
 
     def _check_modifiable(self) -> None:
@@ -155,6 +159,21 @@ class Node:
             self._parent_node = None
         else:
             self._parent_node = parent_node
+
+    @property
+    def child_nodes(self) -> NodeList:
+        """A `NodeList` that contains all children of this node. If there are no children, this is a `NodeList` containing no nodes. The content of the returned `NodeList` is "live" in the sense that, for instance, changes to the children of the node object that it was created from are immediately reflected in the nodes returned by the `NodeList` accessors; it is not a static snapshot of the content of the node. This is true for every `NodeList`, including the ones returned by the `getElementsByTagName` method.
+        """
+        return self._child_nodes
+
+    def _init_child_nodes(self,
+                          child_nodes: Optional[Iterable[_AnyNode]] = None) -> None:
+        """Accessor to set the 'child_nodes' property.
+        """
+        if child_nodes is None:
+            self._child_nodes = NodeList()
+        else:
+            self._child_nodes = NodeList(iter(child_nodes))
 
 
 _AnyNode = Node
