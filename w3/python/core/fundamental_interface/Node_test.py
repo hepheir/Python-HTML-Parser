@@ -64,6 +64,14 @@ class Test_Node(unittest.TestCase):
                 Node(node_type=node_type,
                      node_name='')
 
+    def testParentNode_get(self):
+        parent_node = Node(node_type=NodeType.DOCUMENT_FRAGMENT_NODE,
+                           node_name='#document-fragment')
+        node = Node(node_type=NodeType.ELEMENT_NODE,
+                    node_name='tagName',
+                    parent_node=parent_node)
+        self.assertEqual(node.parent_node, parent_node)
+
 
 if __name__ == '__main__':
     unittest.main()
