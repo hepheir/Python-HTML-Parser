@@ -175,5 +175,19 @@ class Node:
         else:
             self._child_nodes = NodeList(iter(child_nodes))
 
+    def first_child(self) -> Optional[_AnyNode]:
+        """The first child of this node. If there is no such node, this returns `None`.
+        """
+        if not self.child_nodes:
+            return None
+        return self.child_nodes.item(0)
+
+    def last_child(self) -> Optional[_AnyNode]:
+        """The last child of this node. If there is no such node, this returns `None`.
+        """
+        if not self.child_nodes:
+            return None
+        return self.child_nodes.item(self.child_nodes.length-1)
+
 
 _AnyNode = Node
