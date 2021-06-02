@@ -64,6 +64,7 @@ class Node:
                  node_type: NodeType,
                  node_name: DOMString,
                  node_value: Optional[DOMString] = None,
+                 parent_node: Optional[_AnyNode] = None,
                  read_only: bool = False) -> None:
         if node_value is None:
             node_value = ''
@@ -71,11 +72,13 @@ class Node:
         self._set_node_type(node_type)
         self._set_node_name(node_name)
         self._set_node_value(node_value)
+        self._set_parent_node(parent_node)
         self._read_only = bool(read_only)
         # Attributes
         self._node_type: NodeType
         self._node_name: DOMString
         self._node_value: DOMString
+        self._parent_node: _AnyNode
         self._read_only: bool
 
     def _check_modifiable(self) -> None:
@@ -137,6 +140,21 @@ class Node:
             raise ValueError(f'{node_type} is not a valid code '
                              'for a node type.')
         self._node_type = node_type
+
+    @property
+    def parent_node(self) -> Optional[_AnyNode]:
+        """The parent of this node. All nodes, except `Document`, `DocumentFragment`, and `Attr` may have a parent. However, if a node has just been created and not yet added to the tree, or if it has been removed from the tree, this is `None`.
+        """
+        return self._parent_node
+
+    def _set_parent_node(self,
+                         parent_node: Optional[_AnyNode]) -> None:
+        """Indirect accessor to set the 'node_type' property.
+        """
+        if not parent_node:
+            self._parent_node = None
+        else:
+            self._parent_node = parent_node
 
 
 _AnyNode = TypeVar('_AnyNode', Node)
