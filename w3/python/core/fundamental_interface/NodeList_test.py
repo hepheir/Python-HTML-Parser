@@ -1,7 +1,6 @@
 from typing import Iterator
 import unittest
 
-from w3.python.core.fundamental_interface.DOMException import DOMException
 from w3.python.core.fundamental_interface.Node import Node
 from w3.python.core.fundamental_interface.Node import NodeType
 from w3.python.core.fundamental_interface.NodeList import NodeList
