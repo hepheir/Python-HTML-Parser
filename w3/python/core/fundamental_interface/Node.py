@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import enum
-from typing import Optional
+from typing import Optional, TypeVar
 
 from w3.python.core.fundamental_interface.DOMException import DOMException
 from w3.python.core.type import DOMString
@@ -135,3 +137,6 @@ class Node:
             raise ValueError(f'{node_type} is not a valid code '
                              'for a node type.')
         self._node_type = node_type
+
+
+_AnyNode = TypeVar('_AnyNode', Node)
