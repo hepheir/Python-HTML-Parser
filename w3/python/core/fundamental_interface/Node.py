@@ -175,6 +175,7 @@ class Node:
         else:
             self._child_nodes = NodeList(iter(child_nodes))
 
+    @property
     def first_child(self) -> Optional[_AnyNode]:
         """The first child of this node. If there is no such node, this returns `None`.
         """
@@ -182,6 +183,7 @@ class Node:
             return None
         return self.child_nodes.item(0)
 
+    @property
     def last_child(self) -> Optional[_AnyNode]:
         """The last child of this node. If there is no such node, this returns `None`.
         """
