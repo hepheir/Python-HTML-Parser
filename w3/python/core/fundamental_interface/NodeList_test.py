@@ -1,9 +1,9 @@
 from typing import Iterator
 import unittest
 
-from w3.python.core.fundamental_interface.Node import Node
-from w3.python.core.fundamental_interface.Node import NodeType
-from w3.python.core.fundamental_interface.NodeList import NodeList
+from w3.dom import Node
+from w3.dom import NodeType
+from w3.dom import NodeList
 
 
 def _make_nodes(n: int) -> Iterator[Node]:

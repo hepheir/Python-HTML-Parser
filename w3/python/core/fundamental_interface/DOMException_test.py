@@ -1,6 +1,6 @@
 import unittest
 
-from w3.python.core.fundamental_interface.DOMException import DOMException
+from w3.dom import DOMException
 
 
 class Test_DOMException(unittest.TestCase):
