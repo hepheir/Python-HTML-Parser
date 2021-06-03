@@ -234,7 +234,7 @@ class Node:
 
     def _init_attributes(self,
                          attributes: Optional[Iterable[_AnyNode]] = None) -> None:
-        self._attributes: _NamedNodeMap = {} # TODO: Replace with real NamedNodeMap #19
+        self._attributes: _NamedNodeMap = {}  # TODO: Replace with real NamedNodeMap #19
         if attributes is None:
             return
         for attr in iter(attributes):
@@ -256,5 +256,5 @@ class Node:
 
 
 _AnyNode = Node
-_NamedNodeMap = Dict[str, _AnyNode]  # TODO: Implement NamedNodeMap #19
-_Document = Node  # TODO: Implement Document #20
+_NamedNodeMap = Dict[str, _AnyNode]  # TODO: Implement NamedNodeMap (#19)
+_Document = Node  # TODO: Implement Document (#20)
