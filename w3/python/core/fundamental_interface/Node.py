@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import enum
-from typing import Iterable, Optional
+from typing import Dict, Iterable, Optional
 
 from w3.python.core.fundamental_interface.DOMException import DOMException
 from w3.python.core.fundamental_interface.NodeList import NodeList
@@ -67,6 +67,7 @@ class Node:
                  node_value: Optional[DOMString] = None,
                  parent_node: Optional[_AnyNode] = None,
                  child_nodes: Optional[Iterable[_AnyNode]] = None,
+                 attributes: Optional[Iterable[_AnyNode]] = None,
                  read_only: bool = False) -> None:
         if node_value is None:
             node_value = ''
@@ -76,6 +77,7 @@ class Node:
         self._set_node_value(node_value)
         self._set_parent_node(parent_node)
         self._init_child_nodes(child_nodes)
+        self._init_attributes(attributes)
         self._read_only = bool(read_only)
         # Attributes
         self._node_type: NodeType
@@ -83,6 +85,7 @@ class Node:
         self._node_value: DOMString
         self._parent_node: _AnyNode
         self._child_nodes: NodeList
+        self._attributes: _NamedNodeMap
         self._read_only: bool
 
     def _check_modifiable(self) -> None:
@@ -220,5 +223,20 @@ class Node:
             return None
         return self.parent_node.child_nodes.index(self)
 
+    @property
+    def attributes(self) -> _NamedNodeMap:
+        """A `NamedNodeMap` containing the attributes of this node (if it is an `Element`) or `None` otherwise.
+        """
+        return self._attributes
+
+    def _init_attributes(self,
+                         attributes: Optional[Iterable[_AnyNode]] = None) -> None:
+        self._attributes: _NamedNodeMap = {} # TODO: Replace with real NamedNodeMap #19
+        if attributes is None:
+            return
+        for attr in iter(attributes):
+            self._attributes.set_named_item(attr)
+
 
 _AnyNode = Node
+_NamedNodeMap = Dict[str, _AnyNode]  # TODO: Implement NamedNodeMap #19
