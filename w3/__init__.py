@@ -1,5 +1,4 @@
 """A Python HTML Parser
-
 This is a personal project owned by Hepheir.
 
 https://github.com/Hepheir/Python-HTML-Parser/

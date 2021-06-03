@@ -103,13 +103,11 @@ class Node:
 
     @property
     def node_name(self) -> DOMString:
-        """Read only; The name of this node, depending on its type.
-        """
+        """Read only; The name of this node, depending on its type."""
         return self._node_name
 
     def _set_node_name(self, name: DOMString) -> None:
-        """Indirect accessor to set the 'node_name' property.
-        """
+        """Indirect accessor to set the 'node_name' property."""
         self._node_name = DOMString(name)
 
     @property
@@ -139,13 +137,11 @@ class Node:
 
     @property
     def node_type(self) -> NodeType:
-        """Read only; A code representing the type of the underlying object, as defined in `NodeType`.
-        """
+        """Read only; A code representing the type of the underlying object, as defined in `NodeType`."""
         return self._node_type
 
     def _set_node_type(self, node_type: NodeType) -> None:
-        """Indirect accessor to set the 'node_type' property.
-        """
+        """Indirect accessor to set the 'node_type' property."""
         if node_type not in NodeType:
             raise ValueError(f'{node_type} is not a valid code '
                              'for a node type.')
@@ -153,14 +149,16 @@ class Node:
 
     @property
     def parent_node(self) -> Optional[_AnyNode]:
-        """The parent of this node. All nodes, except `Document`, `DocumentFragment`, and `Attr` may have a parent. However, if a node has just been created and not yet added to the tree, or if it has been removed from the tree, this is `None`.
+        """The parent of this node.
+
+        All nodes, except `Document`, `DocumentFragment`, and `Attr` may have a parent.
+        However, if a node has just been created and not yet added to the tree, or if it has been removed from the tree, this is `None`.
         """
         return self._parent_node
 
     def _set_parent_node(self,
                          parent_node: Optional[_AnyNode]) -> None:
-        """Indirect accessor to set the 'node_type' property.
-        """
+        """Indirect accessor to set the 'node_type' property."""
         if not parent_node:
             self._parent_node = None
         else:
@@ -168,14 +166,17 @@ class Node:
 
     @property
     def child_nodes(self) -> NodeList:
-        """A `NodeList` that contains all children of this node. If there are no children, this is a `NodeList` containing no nodes. The content of the returned `NodeList` is "live" in the sense that, for instance, changes to the children of the node object that it was created from are immediately reflected in the nodes returned by the `NodeList` accessors; it is not a static snapshot of the content of the node. This is true for every `NodeList`, including the ones returned by the `getElementsByTagName` method.
+        """A `NodeList` that contains all children of this node.
+
+        If there are no children, this is a `NodeList` containing no nodes.
+        The content of the returned `NodeList` is "live" in the sense that, for instance, changes to the children of the node object that it was created from are immediately reflected in the nodes returned by the `NodeList` accessors; it is not a static snapshot of the content of the node.
+        This is true for every `NodeList`, including the ones returned by the `getElementsByTagName` method.
         """
         return self._child_nodes
 
     def _init_child_nodes(self,
                           child_nodes: Optional[Iterable[_AnyNode]] = None) -> None:
-        """Accessor to set the 'child_nodes' property.
-        """
+        """Accessor to set the 'child_nodes' property."""
         if child_nodes is None:
             self._child_nodes = NodeList()
         else:
@@ -183,7 +184,9 @@ class Node:
 
     @property
     def first_child(self) -> Optional[_AnyNode]:
-        """The first child of this node. If there is no such node, this returns `None`.
+        """The first child of this node.
+
+        If there is no such node, this returns `None`.
         """
         if not self.child_nodes:
             return None
@@ -191,7 +194,9 @@ class Node:
 
     @property
     def last_child(self) -> Optional[_AnyNode]:
-        """The last child of this node. If there is no such node, this returns `None`.
+        """The last child of this node.
+
+        If there is no such node, this returns `None`.
         """
         if not self.child_nodes:
             return None
@@ -199,7 +204,9 @@ class Node:
 
     @property
     def previous_sibling(self) -> Optional[_AnyNode]:
-        """The node immediately preceding this node. If there is no such node, this returns `None`.
+        """The node immediately preceding this node.
+
+        If there is no such node, this returns `None`.
         """
         if self.parent_node is None:
             return None
@@ -210,7 +217,9 @@ class Node:
 
     @property
     def next_sibling(self) -> Optional[_AnyNode]:
-        """The node immediately following this node. If there is no such node, this returns `None`.
+        """The node immediately following this node.
+
+        If there is no such node, this returns `None`.
         """
         if self.parent_node is None:
             return None
@@ -220,7 +229,9 @@ class Node:
         return self.parent_node.child_nodes.item(nth_child+1)
 
     def _nth_child_of_parent(self) -> Optional[int]:
-        """Accessor that indicates how many siblings are there preceding this node. if there is no such parent node, this returns `None`.
+        """Accessor that indicates how many siblings are there preceding this node.
+
+        If there is no such parent node, this returns `None`.
         """
         if self.parent_node is None:
             return None
@@ -228,8 +239,7 @@ class Node:
 
     @property
     def attributes(self) -> _NamedNodeMap:
-        """A `NamedNodeMap` containing the attributes of this node (if it is an `Element`) or `None` otherwise.
-        """
+        """A `NamedNodeMap` containing the attributes of this node (if it is an `Element`) or `None` otherwise."""
         return self._attributes
 
     def _init_attributes(self,
@@ -242,7 +252,10 @@ class Node:
 
     @property
     def owner_document(self) -> Optional[_Document]:
-        """The `Document` object associated with this node. This is also the `Document` object used to create new nodes. When this node is a `Document` this is `None`.
+        """The `Document` object associated with this node.
+
+        This is also the `Document` object used to create new nodes.
+        When this node is a `Document` this is `None`.
         """
         if self.node_type == NodeType.DOCUMENT_NODE:
             return None
@@ -250,8 +263,7 @@ class Node:
 
     def _set_owner_document(self,
                             owner_document: Optional[_Document] = None) -> None:
-        """Indirect accessor to set the 'owner_document' property.
-        """
+        """Indirect accessor to set the 'owner_document' property."""
         self._owner_document = owner_document
 
 

@@ -12,13 +12,17 @@ class NodeList(list):
 
     @property
     def length(self) -> int:
-        """The number of nodes in the list. The range of valid child node indices is 0 to `length`-1 inclusive.
+        """The number of nodes in the list.
+
+        The range of valid child node indices is 0 to `length`-1 inclusive.
         """
         return len(self)
 
 
     def item(self, index: int) -> Optional[_AnyNode]:
-        """Returns the indexth item in the collection. If index is greater than or equal to the number of nodes in the list, this returns null.
+        """Returns the indexth item in the collection.
+
+        If index is greater than or equal to the number of nodes in the list, this returns null.
 
         Args:
             index: Index into the collection.
