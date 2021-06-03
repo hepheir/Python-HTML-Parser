@@ -68,6 +68,7 @@ class Node:
                  parent_node: Optional[_AnyNode] = None,
                  child_nodes: Optional[Iterable[_AnyNode]] = None,
                  attributes: Optional[Iterable[_AnyNode]] = None,
+                 owner_document: Optional[_Document] = None,
                  read_only: bool = False) -> None:
         if node_value is None:
             node_value = ''
@@ -78,6 +79,7 @@ class Node:
         self._set_parent_node(parent_node)
         self._init_child_nodes(child_nodes)
         self._init_attributes(attributes)
+        self._set_owner_document(owner_document)
         self._read_only = bool(read_only)
         # Attributes
         self._node_type: NodeType
@@ -86,6 +88,7 @@ class Node:
         self._parent_node: _AnyNode
         self._child_nodes: NodeList
         self._attributes: _NamedNodeMap
+        self._owner_document: _Document
         self._read_only: bool
 
     def _check_modifiable(self) -> None:
@@ -237,6 +240,21 @@ class Node:
         for attr in iter(attributes):
             self._attributes.set_named_item(attr)
 
+    @property
+    def owner_document(self) -> Optional[_Document]:
+        """The `Document` object associated with this node. This is also the `Document` object used to create new nodes. When this node is a `Document` this is `None`.
+        """
+        if self.node_type == NodeType.DOCUMENT_NODE:
+            return None
+        return self._owner_document
+
+    def _set_owner_document(self,
+                            owner_document: Optional[_Document] = None) -> None:
+        """Indirect accessor to set the 'owner_document' property.
+        """
+        self._owner_document = owner_document
+
 
 _AnyNode = Node
 _NamedNodeMap = Dict[str, _AnyNode]  # TODO: Implement NamedNodeMap #19
+_Document = Node  # TODO: Implement Document #20
