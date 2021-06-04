@@ -65,7 +65,6 @@ class Node:
                  node_type: NodeType,
                  node_name: DOMString,
                  node_value: Optional[DOMString] = None,
-                 parent_node: Optional[_AnyNode] = None,
                  child_nodes: Optional[Iterable[_AnyNode]] = None,
                  attributes: Optional[Iterable[_AnyNode]] = None,
                  owner_document: Optional[_Document] = None,
@@ -76,7 +75,7 @@ class Node:
         self._set_node_type(node_type)
         self._set_node_name(node_name)
         self._set_node_value(node_value)
-        self._set_parent_node(parent_node)
+        self._set_parent_node(None)
         self._init_child_nodes(child_nodes)
         self._init_attributes(attributes)
         self._set_owner_document(owner_document)
@@ -85,7 +84,7 @@ class Node:
         self._node_type: NodeType
         self._node_name: DOMString
         self._node_value: DOMString
-        self._parent_node: _AnyNode
+        self._parent_node: Optional[_AnyNode]
         self._child_nodes: NodeList
         self._attributes: _NamedNodeMap
         self._owner_document: _Document
