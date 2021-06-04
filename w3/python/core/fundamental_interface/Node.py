@@ -90,16 +90,6 @@ class Node:
         self._owner_document: Optional[_Document]
         self._read_only: bool
 
-    def _check_modifiable(self) -> None:
-        """Checks if this node is modifiable.
-
-        Raises:
-            DOMException:
-            - `NO_MODIFICATION_ALLOWED_ERR`: Raised when the node is readonly.
-        """
-        if self._read_only:
-            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
-
     @property
     def node_name(self) -> DOMString:
         """Read only; The name of this node, depending on its type."""
@@ -131,7 +121,8 @@ class Node:
             DOMException:
             - `NO_MODIFICATION_ALLOWED_ERR`: Raised when the node is readonly.
         """
-        self._check_modifiable()
+        if self._read_only:
+            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
         self._node_value = DOMString(value)
 
     @property
