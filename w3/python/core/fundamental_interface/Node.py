@@ -64,10 +64,10 @@ class Node:
     def __init__(self,
                  node_type: NodeType,
                  node_name: DOMString,
+                 owner_document: Optional[_Document],
                  node_value: Optional[DOMString] = None,
                  child_nodes: Optional[Iterable[_AnyNode]] = None,
                  attributes: Optional[Iterable[_AnyNode]] = None,
-                 owner_document: Optional[_Document] = None,
                  read_only: bool = False) -> None:
         if node_value is None:
             node_value = ''
@@ -87,7 +87,7 @@ class Node:
         self._parent_node: Optional[_AnyNode]
         self._child_nodes: NodeList
         self._attributes: _NamedNodeMap
-        self._owner_document: _Document
+        self._owner_document: Optional[_Document]
         self._read_only: bool
 
     def _check_modifiable(self) -> None:
@@ -256,13 +256,16 @@ class Node:
         This is also the `Document` object used to create new nodes.
         When this node is a `Document` this is `None`.
         """
-        if self.node_type == NodeType.DOCUMENT_NODE:
-            return None
         return self._owner_document
 
     def _set_owner_document(self,
                             owner_document: Optional[_Document] = None) -> None:
         """Indirect accessor to set the 'owner_document' property."""
+        if owner_document is None:
+            if self.node_type != NodeType.DOCUMENT_NODE:
+                raise ValueError('`Node` should have a `Document` object ',
+                                 'which associated with this node, ',
+                                 'Unless this node is a `Document`.')
         self._owner_document = owner_document
 
     def insert_before(self,
