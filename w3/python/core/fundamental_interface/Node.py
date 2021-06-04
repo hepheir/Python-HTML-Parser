@@ -301,6 +301,37 @@ class Node:
         new_child._set_parent_node(self)
         return new_child
 
+    def append_child(self, new_child: _AnyNode) -> _AnyNode:
+        """Adds the node `new_child` to the end of the list of children of this node.
+
+        If the `new_child` is already in the tree, it is first removed.
+
+        Args:
+            new_child: The node to add. If it is a `DocumentFragment` object, the entire contents of the document fragment are moved into the child list of this node
+
+        Returns:
+            The node added.
+
+        Raises:
+            DOMException:
+             -  `HIERARCHY_REQUEST_ERR`: Raised if this node is of a type that does not allow children of the type of the `new_child` node, or if the node to append is one of this node's ancestors.
+             -  `WRONG_DOCUMENT_ERR`: Raised if `new_child` was created from a different document than the one that created this node.
+             -  `NO_MODIFICATION_ALLOWED_ERR`: Raised if this node is readonly.
+        """
+        if self._read_only:
+            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
+        if self.owner_document is not new_child.owner_document:
+            raise DOMException(DOMException.WRONG_DOCUMENT_ERR)
+        # `HIERARCHY_REQUEST_ERR` should be checked on subclasses by overriding.
+        if new_child.node_type == NodeType.DOCUMENT_FRAGMENT_NODE:
+            grand_child_node: _AnyNode
+            for grand_child_node in new_child.child_nodes:
+                self.append_child(grand_child_node)
+        else:
+            new_child._set_parent_node(self)
+            self.child_nodes.append(new_child)
+        return new_child
+
     def has_child_nodes(self) -> bool:
         """This is a convenience method to allow easy determination of whether a node has any children.
 
