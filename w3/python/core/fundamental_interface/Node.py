@@ -188,7 +188,7 @@ class Node:
 
         If there is no such node, this returns `None`.
         """
-        if not self.child_nodes:
+        if not self.has_child_nodes():
             return None
         return self.child_nodes.item(0)
 
@@ -198,7 +198,7 @@ class Node:
 
         If there is no such node, this returns `None`.
         """
-        if not self.child_nodes:
+        if not self.has_child_nodes():
             return None
         return self.child_nodes.item(self.child_nodes.length-1)
 
@@ -265,6 +265,14 @@ class Node:
                             owner_document: Optional[_Document] = None) -> None:
         """Indirect accessor to set the 'owner_document' property."""
         self._owner_document = owner_document
+
+    def has_child_nodes(self) -> bool:
+        """This is a convenience method to allow easy determination of whether a node has any children.
+
+        Returns:
+            `True` if the node has any children, `False` if the node has no children.
+        """
+        return bool(self.child_nodes)
 
 
 _AnyNode = Node
