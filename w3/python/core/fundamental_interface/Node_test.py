@@ -64,13 +64,11 @@ class TestProperty_NodeValue(unittest.TestCase):
                     owner_document=self.document,
                     node_value='foo',
                     read_only=True)
-        try:
+        # Testing
+        with self.assertRaises(DOMException) as context_manager:
             text.node_value = 'bar'
-        except DOMException as e:
-            code = e.args[0]
-            self.assertEqual(code, DOMException.NO_MODIFICATION_ALLOWED_ERR)
-        else:
-            self.fail()
+        self.assertEqual(context_manager.exception.args[0],
+                         DOMException.NO_MODIFICATION_ALLOWED_ERR)
         # `node_value` should not be modified.
         self.assertEqual(text.node_value, 'foo')
 
@@ -97,14 +95,10 @@ class TestProperty_NodeType(unittest.TestCase):
     def testSetter_WrongTypes(self):
         for node_type in [-1, None, 'hi', True, Node, NodeType, 'DOCUMENT_NODE']:
             with self.subTest(node_type=node_type):
-                try:
+                with self.assertRaises((TypeError, ValueError)):
                     Node(node_type=node_type,
                          node_name='',
                          owner_document=self.document)
-                except Exception:
-                    pass
-                else:
-                    self.fail()
 
 
 class TestProperty_ParentNode(unittest.TestCase):
@@ -128,6 +122,7 @@ class TestProperty_ParentNode(unittest.TestCase):
     def testSetter_Raises_Exception(self):
         parent_node = _create_element_node(self.document)
         child_node = _create_element_node(self.document)
+        # Testing
         try:
             child_node.parent_node = parent_node  # type: ignore
         except:
@@ -240,13 +235,11 @@ class TestMethod_InsertBefore(unittest.TestCase):
         document_2 = _create_document_node()
         elem_node_1 = _create_element_node(document_1)
         elem_node_2 = _create_element_node(document_2)
-        try:
+        # Testing
+        with self.assertRaises(DOMException) as context_manager:
             elem_node_1.insert_before(elem_node_2)
-        except DOMException as e:
-            code = e.args[0]
-            self.assertEqual(code, DOMException.WRONG_DOCUMENT_ERR)
-        else:
-            self.fail()
+        self.assertEqual(context_manager.exception.args[0],
+                         DOMException.WRONG_DOCUMENT_ERR)
 
     def test_Raises_NO_MODIFICATION_ALLOWED_ERR(self):
         # ======================================
@@ -260,13 +253,11 @@ class TestMethod_InsertBefore(unittest.TestCase):
                                     owner_document=self.document,
                                     read_only=True)
         new_child_node = _create_element_node(self.document)
-        try:
+        # Testing
+        with self.assertRaises(DOMException) as context_manager:
             parent_node_readonly.insert_before(new_child_node)
-        except DOMException as e:
-            code = e.args[0]
-            self.assertEqual(code, DOMException.NO_MODIFICATION_ALLOWED_ERR)
-        else:
-            self.fail()
+        self.assertEqual(context_manager.exception.args[0],
+                         DOMException.NO_MODIFICATION_ALLOWED_ERR)
 
     def test_Raises_NOT_FOUND_ERR(self):
         # ======================================
@@ -280,13 +271,10 @@ class TestMethod_InsertBefore(unittest.TestCase):
         new_child_node = _create_element_node(self.document)
         ref_child_node = _create_element_node(self.document)
         # Testing
-        try:
+        with self.assertRaises(DOMException) as context_manager:
             parent_node.insert_before(new_child_node, ref_child_node)
-        except DOMException as e:
-            code = e.args[0]
-            self.assertEqual(code, DOMException.NOT_FOUND_ERR)
-        else:
-            self.fail()
+        self.assertEqual(context_manager.exception.args[0],
+                         DOMException.NOT_FOUND_ERR)
 
 
 class TestMethod_AppendChild(unittest.TestCase):
@@ -372,13 +360,11 @@ class TestMethod_AppendChild(unittest.TestCase):
         document_2 = _create_document_node()
         elem_node_1 = _create_element_node(document_1)
         elem_node_2 = _create_element_node(document_2)
-        try:
+        # Testing
+        with self.assertRaises(DOMException) as context_manager:
             elem_node_1.append_child(elem_node_2)
-        except DOMException as e:
-            code = e.args[0]
-            self.assertEqual(code, DOMException.WRONG_DOCUMENT_ERR)
-        else:
-            self.fail()
+        self.assertEqual(context_manager.exception.args[0],
+                         DOMException.WRONG_DOCUMENT_ERR)
 
     def test_Raises_NO_MODIFICATION_ALLOWED_ERR(self):
         # ======================================
@@ -392,13 +378,11 @@ class TestMethod_AppendChild(unittest.TestCase):
                                     owner_document=self.document,
                                     read_only=True)
         new_child_node = _create_element_node(self.document)
-        try:
+        # Testing
+        with self.assertRaises(DOMException) as context_manager:
             parent_node_readonly.append_child(new_child_node)
-        except DOMException as e:
-            code = e.args[0]
-            self.assertEqual(code, DOMException.NO_MODIFICATION_ALLOWED_ERR)
-        else:
-            self.fail()
+        self.assertEqual(context_manager.exception.args[0],
+                         DOMException.NO_MODIFICATION_ALLOWED_ERR)
 
 
 class TestMethod_ReplaceChild(unittest.TestCase):
@@ -449,13 +433,11 @@ class TestMethod_ReplaceChild(unittest.TestCase):
         old_child_node = _create_element_node(document_1)
         new_child_node = _create_element_node(document_2)
         parent_node.append_child(old_child_node)
-        try:
+        # Testing
+        with self.assertRaises(DOMException) as context_manager:
             parent_node.replace_child(new_child_node, old_child_node)
-        except DOMException as e:
-            code = e.args[0]
-            self.assertEqual(code, DOMException.WRONG_DOCUMENT_ERR)
-        else:
-            self.fail()
+        self.assertEqual(context_manager.exception.args[0],
+                         DOMException.WRONG_DOCUMENT_ERR)
 
     def test_Raises_NO_MODIFICATION_ALLOWED_ERR(self):
         # ======================================
@@ -469,13 +451,11 @@ class TestMethod_ReplaceChild(unittest.TestCase):
                                     owner_document=self.document,
                                     read_only=True)
         new_child_node = _create_element_node(self.document)
-        try:
+        # Testing
+        with self.assertRaises(DOMException) as context_manager:
             parent_node_readonly.append_child(new_child_node)
-        except DOMException as e:
-            code = e.args[0]
-            self.assertEqual(code, DOMException.NO_MODIFICATION_ALLOWED_ERR)
-        else:
-            self.fail()
+        self.assertEqual(context_manager.exception.args[0],
+                         DOMException.NO_MODIFICATION_ALLOWED_ERR)
 
 
 class TestMethod_HasChild(unittest.TestCase):
@@ -539,12 +519,10 @@ class TestMethod_RemoveChild(unittest.TestCase):
         parent_node = _create_element_node(self.document)
         child_node = _create_element_node(self.document)
         # Testing
-        try:
+        with self.assertRaises(DOMException) as context_manager:
             parent_node.remove_child(child_node)
-        except DOMException as de:
-            self.assertEqual(de.args[0], DOMException.NOT_FOUND_ERR)
-        else:
-            self.fail()
+        self.assertEqual(context_manager.exception.args[0],
+                         DOMException.NOT_FOUND_ERR)
 
     def test_Raises_NO_MODIFICATION_ALLOWED_ERR(self):
         # ======================================
@@ -561,13 +539,10 @@ class TestMethod_RemoveChild(unittest.TestCase):
                            child_nodes=[child_node],
                            read_only=True)
         # Testing
-        try:
+        with self.assertRaises(DOMException) as context_manager:
             parent_node.remove_child(child_node)
-        except DOMException as de:
-            code = de.args[0]
-            self.assertEqual(code, DOMException.NO_MODIFICATION_ALLOWED_ERR)
-        else:
-            self.fail()
+        self.assertEqual(context_manager.exception.args[0],
+                         DOMException.NO_MODIFICATION_ALLOWED_ERR)
 
 
 if __name__ == '__main__':
