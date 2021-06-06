@@ -473,5 +473,33 @@ class Test_ReplaceChild(unittest.TestCase):
             self.fail()
 
 
+class Test_HasChild(unittest.TestCase):
+    def test_True(self):
+        # ======================================
+        # <document>
+        #     <parent_node>
+        #         <child_node/>
+        #     </parent_node>
+        # <document>
+        # ======================================
+        document = _create_document_node()
+        parent_node = _create_element_node(document)
+        child_node = _create_element_node(document)
+        parent_node.append_child(child_node)
+        # Testing
+        self.assertTrue(parent_node.has_child_nodes())
+
+    def test_False(self):
+        # ======================================
+        # <document>
+        #     <node/>
+        # <document>
+        # ======================================
+        document = _create_document_node()
+        node = _create_element_node(document)
+        # Testing
+        self.assertFalse(node.has_child_nodes())
+
+
 if __name__ == '__main__':
     unittest.main()
