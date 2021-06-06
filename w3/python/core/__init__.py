@@ -5,3 +5,4 @@ from w3.python.core.fundamental_interface import DOMImplementation
 from w3.python.core.fundamental_interface import Node
 from w3.python.core.fundamental_interface import NodeType
 from w3.python.core.fundamental_interface import NodeList
+from w3.python.core.type import DOMString

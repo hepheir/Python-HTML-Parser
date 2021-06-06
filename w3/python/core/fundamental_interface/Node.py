@@ -5,7 +5,7 @@ from typing import Dict, Iterable, Optional
 
 from w3.python.core.fundamental_interface.DOMException import DOMException
 from w3.python.core.fundamental_interface.NodeList import NodeList
-from w3.python.core.type import DOMString
+from w3.python.core.type.DOMString import DOMString
 
 
 class NodeType(enum.IntEnum):
