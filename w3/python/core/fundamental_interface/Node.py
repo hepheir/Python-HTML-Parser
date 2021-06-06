@@ -280,24 +280,40 @@ class Node:
               - `NO_MODIFICATION_ALLOWED_ERR`: Raised if this node is readonly.
               - `NOT_FOUND_ERR`: Raised if `ref_child` is not a child of this node.
         """
+        # `HIERARCHY_REQUEST_ERR` should be checked on subclasses by overriding.
         if self._read_only:
             raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
-        if self.owner_document is not new_child.owner_document:
+        if new_child.owner_document is not self.owner_document:
             raise DOMException(DOMException.WRONG_DOCUMENT_ERR)
-        # `HIERARCHY_REQUEST_ERR` should be checked on subclasses by overriding.
-        if new_child in self.child_nodes:
-            self.child_nodes.remove(new_child)
+        if ref_child is not None:
+            if ref_child not in self.child_nodes:
+                raise DOMException(DOMException.NOT_FOUND_ERR)
+        # If `new_child` and `old_child` share the same reference,
+        # this method does nothing.
+        if new_child is ref_child:
+            return new_child
+        # If `ref_child` is null, insert `new_child` at the end of the list of children.
+        #
+        # This operation is equivalent to the `append_child()` method.
+        if ref_child is None:
+            self.append_child(new_child)
+            return new_child
+        # If `new_child` is a `DocumentFragment` object,
+        # all of its children are inserted, in the same order.
+        #
+        # This is done by recursive calls.
         if new_child.node_type == NodeType.DOCUMENT_FRAGMENT_NODE:
             grand_child_node: _AnyNode
             for grand_child_node in new_child.child_nodes:
                 self.insert_before(grand_child_node, ref_child)
-        elif ref_child is None:
-            self.child_nodes.append(new_child)
-        elif ref_child not in self.child_nodes:
-            raise DOMException(DOMException.NOT_FOUND_ERR)
-        else:
-            self.child_nodes.insert(self.child_nodes.index(ref_child),
-                                    new_child)
+            return new_child
+        # If the `new_child` is already in the tree,
+        # it is first removed.
+        if new_child in self.child_nodes:
+            self.child_nodes.remove(new_child)
+        # Otherwise, simply insert `new_child` using the methods of `NodeList(list)`.
+        ref_index = self.child_nodes.index(ref_child)
+        self.child_nodes.insert(ref_index, new_child)
         new_child._set_parent_node(self)
         return new_child
 
