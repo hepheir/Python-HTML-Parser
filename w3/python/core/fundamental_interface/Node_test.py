@@ -233,5 +233,81 @@ class Test_InsertBefore(unittest.TestCase):
             self.fail()
 
 
+
+class Test_AppendChild(unittest.TestCase):
+    def test_AppendNewChild(self):
+        document = _create_document_node()
+        parent_node = _create_element_node(document)
+        child_node = _create_element_node(document)
+        # Testing
+        parent_node.append_child(child_node)
+        self.assertEqual(child_node.parent_node, parent_node)
+        self.assertEqual(parent_node.child_nodes.item(0), child_node)
+        self.assertEqual(parent_node.child_nodes.length, 1)
+
+    def test_AppendExistingChild(self):
+        document = _create_document_node()
+        parent_node = _create_element_node(document)
+        first_child_node = _create_element_node(document)
+        second_child_node = _create_element_node(document)
+        # Warning: this is assuming that `append_child()` has passed `test_AppendNewChild()` test.
+        parent_node.append_child(first_child_node)
+        parent_node.append_child(second_child_node)
+        # Testing
+        parent_node.append_child(first_child_node)
+        self.assertEqual(second_child_node.parent_node, parent_node)
+        self.assertEqual(parent_node.child_nodes.item(0), second_child_node)
+        self.assertEqual(parent_node.child_nodes.item(1), first_child_node)
+        self.assertEqual(parent_node.child_nodes.length, 2)
+
+    def test_AppendDocumentFragmentNode(self):
+        document = _create_document_node()
+        parent_node = _create_element_node(document)
+        docfrag_node = Node(node_type=NodeType.DOCUMENT_FRAGMENT_NODE,
+                            node_name='#document-fragment',
+                            owner_document=document)
+        first_child_node = _create_element_node(document)
+        second_child_node = _create_element_node(document)
+        # Warning: this is assuming that `append_child()` has passed `test_AppendNewChild()` test.
+        docfrag_node.append_child(first_child_node)
+        docfrag_node.append_child(second_child_node)
+        # Testing
+        parent_node.append_child(docfrag_node)
+        self.assertEqual(parent_node.child_nodes.item(0), first_child_node)
+        self.assertEqual(parent_node.child_nodes.item(1), second_child_node)
+        self.assertEqual(parent_node.child_nodes.length, 2)
+
+    def test_Raises_HIERARCHY_REQUEST_ERR(self):
+        self.skipTest(NotImplemented)  # TODO
+
+    def test_Raises_WRONG_DOCUMENT_ERR(self):
+        document_1 = _create_document_node()
+        document_2 = _create_document_node()
+        elem_node_1 = _create_element_node(document_1)
+        elem_node_2 = _create_element_node(document_2)
+        try:
+            elem_node_1.append_child(elem_node_2)
+        except DOMException as e:
+            code = e.args[0]
+            self.assertEqual(code, DOMException.WRONG_DOCUMENT_ERR)
+        else:
+            self.fail()
+
+    def test_Raises_NO_MODIFICATION_ALLOWED_ERR(self):
+        document = _create_document_node()
+        elem_node_readonly = Node(node_type=NodeType.ELEMENT_NODE,
+                                  node_name='tagName',
+                                  owner_document=document,
+                                  read_only=True)
+        elem_node_child = _create_element_node(document)
+        try:
+            elem_node_readonly.append_child(elem_node_child)
+        except DOMException as e:
+            code = e.args[0]
+            self.assertEqual(code, DOMException.NO_MODIFICATION_ALLOWED_ERR)
+        else:
+            self.fail()
+
+
 if __name__ == '__main__':
     unittest.main()
