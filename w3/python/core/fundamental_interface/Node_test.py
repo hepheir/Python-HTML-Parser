@@ -31,37 +31,37 @@ class TestDunder_Init(unittest.TestCase):
 
 
 class TestProperty_NodeValue(unittest.TestCase):
+    def setUp(self) -> None:
+        self.document = _create_document_node()
+        return super().setUp()
+
     def testGetter(self):
-        document = _create_document_node()
         text = Node(node_type=NodeType.TEXT_NODE,
                     node_name='#text',
-                    owner_document=document,
+                    owner_document=self.document,
                     node_value='lorem ipsum')
         self.assertEqual(text.node_value, 'lorem ipsum')
 
     def testConstructor(self):
-        document = _create_document_node()
         text = Node(node_type=NodeType.TEXT_NODE,
                     node_name='#text',
-                    owner_document=document,
+                    owner_document=self.document,
                     node_value='foo',
                     read_only=False)
         self.assertEqual(text.node_value, 'foo')
 
     def testSetter(self):
-        document = _create_document_node()
         text = Node(node_type=NodeType.TEXT_NODE,
                     node_name='#text',
-                    owner_document=document,
+                    owner_document=self.document,
                     read_only=False)
         text.node_value = 'bar'
         self.assertEqual(text.node_value, 'bar')
 
     def testSetter_ReadOnly(self):
-        document = _create_document_node()
         text = Node(node_type=NodeType.TEXT_NODE,
                     node_name='#text',
-                    owner_document=document,
+                    owner_document=self.document,
                     node_value='foo',
                     read_only=True)
         try:
@@ -76,53 +76,58 @@ class TestProperty_NodeValue(unittest.TestCase):
 
 
 class TestProperty_NodeType(unittest.TestCase):
+    def setUp(self) -> None:
+        self.document = _create_document_node()
+        return super().setUp()
+
     def testGetter(self):
-        document = _create_document_node()
         for node_type in NodeType:
             node = Node(node_type=node_type,
                         node_name='',
-                        owner_document=document)
+                        owner_document=self.document)
             self.assertEqual(node.node_type, node_type)
 
     def testSetter_CorrectTypes(self):
-        document = _create_document_node()
         for node_type in NodeType:
-            Node(node_type=node_type,
-                 node_name='',
-                 owner_document=document)
-
-    def testSetter_WrongTypes(self):
-        document = _create_document_node()
-        for node_type in [-1, None, 'hi', True, Node, NodeType, 'DOCUMENT_NODE']:
-            try:
+            with self.subTest(node_type=node_type):
                 Node(node_type=node_type,
                      node_name='',
-                     owner_document=document)
-                self.fail()
-            except Exception:
-                pass
+                     owner_document=self.document)
+
+    def testSetter_WrongTypes(self):
+        for node_type in [-1, None, 'hi', True, Node, NodeType, 'DOCUMENT_NODE']:
+            with self.subTest(node_type=node_type):
+                try:
+                    Node(node_type=node_type,
+                         node_name='',
+                         owner_document=self.document)
+                except Exception:
+                    pass
+                else:
+                    self.fail()
 
 
 class TestProperty_ParentNode(unittest.TestCase):
+    def setUp(self) -> None:
+        self.document = _create_document_node()
+        return super().setUp()
+
     def testConstrutor(self):
-        document = _create_document_node()
         docfrag = Node(node_type=NodeType.DOCUMENT_FRAGMENT_NODE,
                        node_name='#document-fragment',
-                       owner_document=document)
+                       owner_document=self.document)
         self.assertIsNone(docfrag.parent_node)
 
     def testGetter(self):
-        document = _create_document_node()
-        parent_node = _create_element_node(document)
-        child_node = _create_element_node(document)
+        parent_node = _create_element_node(self.document)
+        child_node = _create_element_node(self.document)
         # Warning: this is assuming that `append_child()` method works properly.
         parent_node.append_child(child_node)
         self.assertEqual(child_node.parent_node, parent_node)
 
     def testSetter_Raises_Exception(self):
-        document = _create_document_node()
-        parent_node = _create_element_node(document)
-        child_node = _create_element_node(document)
+        parent_node = _create_element_node(self.document)
+        child_node = _create_element_node(self.document)
         try:
             child_node.parent_node = parent_node  # type: ignore
         except:
@@ -132,6 +137,10 @@ class TestProperty_ParentNode(unittest.TestCase):
 
 
 class TestMethod_InsertBefore(unittest.TestCase):
+    def setUp(self) -> None:
+        self.document = _create_document_node()
+        return super().setUp()
+
     def test_WithoutRefNode(self):
         # ======================================
         # <document>
@@ -139,9 +148,8 @@ class TestMethod_InsertBefore(unittest.TestCase):
         #     <new_child_node/>
         # <document>
         # ======================================
-        document = _create_document_node()
-        parent_node = _create_element_node(document)
-        new_child_node = _create_element_node(document)
+        parent_node = _create_element_node(self.document)
+        new_child_node = _create_element_node(self.document)
         # Testing
         parent_node.insert_before(new_child_node)
         self.assertEqual(new_child_node.parent_node, parent_node)
@@ -158,10 +166,9 @@ class TestMethod_InsertBefore(unittest.TestCase):
         #     <new_child_node/>
         # <document>
         # ======================================
-        document = _create_document_node()
-        parent_node = _create_element_node(document)
-        new_child_node = _create_element_node(document)
-        ref_child_node = _create_element_node(document)
+        parent_node = _create_element_node(self.document)
+        new_child_node = _create_element_node(self.document)
+        ref_child_node = _create_element_node(self.document)
         parent_node.append_child(ref_child_node)
         # Testing
         parent_node.insert_before(new_child_node, ref_child_node)
@@ -179,10 +186,9 @@ class TestMethod_InsertBefore(unittest.TestCase):
         #     </parent_node>
         # <document>
         # ======================================
-        document = _create_document_node()
-        parent_node = _create_element_node(document)
-        ref_child_node = _create_element_node(document)
-        new_child_node = _create_element_node(document)
+        parent_node = _create_element_node(self.document)
+        ref_child_node = _create_element_node(self.document)
+        new_child_node = _create_element_node(self.document)
         parent_node.append_child(ref_child_node)
         parent_node.append_child(new_child_node)
         # Testing
@@ -203,13 +209,12 @@ class TestMethod_InsertBefore(unittest.TestCase):
         #     </docfrag_node>
         # <document>
         # ======================================
-        document = _create_document_node()
-        parent_node = _create_element_node(document)
+        parent_node = _create_element_node(self.document)
         docfrag_node = Node(node_type=NodeType.DOCUMENT_FRAGMENT_NODE,
                             node_name='#document-fragment',
-                            owner_document=document)
-        first_child_node = _create_element_node(document)
-        second_child_node = _create_element_node(document)
+                            owner_document=self.document)
+        first_child_node = _create_element_node(self.document)
+        second_child_node = _create_element_node(self.document)
         docfrag_node.append_child(first_child_node)
         docfrag_node.append_child(second_child_node)
         # Testing
@@ -250,12 +255,11 @@ class TestMethod_InsertBefore(unittest.TestCase):
         #     <new_child_node/>
         # <document>
         # ======================================
-        document = _create_document_node()
         parent_node_readonly = Node(node_type=NodeType.ELEMENT_NODE,
                                     node_name='tagName',
-                                    owner_document=document,
+                                    owner_document=self.document,
                                     read_only=True)
-        new_child_node = _create_element_node(document)
+        new_child_node = _create_element_node(self.document)
         try:
             parent_node_readonly.insert_before(new_child_node)
         except DOMException as e:
@@ -272,10 +276,9 @@ class TestMethod_InsertBefore(unittest.TestCase):
         #     <ref_child_node/>
         # <document>
         # ======================================
-        document = _create_document_node()
-        parent_node = _create_element_node(document)
-        new_child_node = _create_element_node(document)
-        ref_child_node = _create_element_node(document)
+        parent_node = _create_element_node(self.document)
+        new_child_node = _create_element_node(self.document)
+        ref_child_node = _create_element_node(self.document)
         # Testing
         try:
             parent_node.insert_before(new_child_node, ref_child_node)
@@ -287,6 +290,10 @@ class TestMethod_InsertBefore(unittest.TestCase):
 
 
 class TestMethod_AppendChild(unittest.TestCase):
+    def setUp(self) -> None:
+        self.document = _create_document_node()
+        return super().setUp()
+
     def test_AppendNewChild(self):
         # ======================================
         # <document>
@@ -294,9 +301,8 @@ class TestMethod_AppendChild(unittest.TestCase):
         #     <new_child_node/>
         # <document>
         # ======================================
-        document = _create_document_node()
-        parent_node = _create_element_node(document)
-        new_child_node = _create_element_node(document)
+        parent_node = _create_element_node(self.document)
+        new_child_node = _create_element_node(self.document)
         # Testing
         parent_node.append_child(new_child_node)
         self.assertEqual(new_child_node.parent_node, parent_node)
@@ -312,10 +318,9 @@ class TestMethod_AppendChild(unittest.TestCase):
         #     </parent_node>
         # <document>
         # ======================================
-        document = _create_document_node()
-        parent_node = _create_element_node(document)
-        new_child_node = _create_element_node(document)
-        old_child_node = _create_element_node(document)
+        parent_node = _create_element_node(self.document)
+        new_child_node = _create_element_node(self.document)
+        old_child_node = _create_element_node(self.document)
         parent_node.append_child(new_child_node)
         parent_node.append_child(old_child_node)
         # Testing
@@ -336,13 +341,12 @@ class TestMethod_AppendChild(unittest.TestCase):
         #     </docfrag_node>
         # <document>
         # ======================================
-        document = _create_document_node()
-        parent_node = _create_element_node(document)
+        parent_node = _create_element_node(self.document)
         docfrag_node = Node(node_type=NodeType.DOCUMENT_FRAGMENT_NODE,
                             node_name='#document-fragment',
-                            owner_document=document)
-        first_child_node = _create_element_node(document)
-        second_child_node = _create_element_node(document)
+                            owner_document=self.document)
+        first_child_node = _create_element_node(self.document)
+        second_child_node = _create_element_node(self.document)
         docfrag_node.append_child(first_child_node)
         docfrag_node.append_child(second_child_node)
         # Testing
@@ -383,12 +387,11 @@ class TestMethod_AppendChild(unittest.TestCase):
         #     <new_child_node/>
         # <document>
         # ======================================
-        document = _create_document_node()
         parent_node_readonly = Node(node_type=NodeType.ELEMENT_NODE,
                                     node_name='tagName',
-                                    owner_document=document,
+                                    owner_document=self.document,
                                     read_only=True)
-        new_child_node = _create_element_node(document)
+        new_child_node = _create_element_node(self.document)
         try:
             parent_node_readonly.append_child(new_child_node)
         except DOMException as e:
@@ -399,6 +402,10 @@ class TestMethod_AppendChild(unittest.TestCase):
 
 
 class TestMethod_ReplaceChild(unittest.TestCase):
+    def setUp(self) -> None:
+        self.document = _create_document_node()
+        return super().setUp()
+
     def test_ReplaceExistingChild(self):
         # ======================================
         # <document>
@@ -409,10 +416,9 @@ class TestMethod_ReplaceChild(unittest.TestCase):
         #     <new_child_node/>
         # <document>
         # ======================================
-        document = _create_document_node()
-        parent_node = _create_element_node(document)
-        new_child_node = _create_element_node(document)
-        old_child_node = _create_element_node(document)
+        parent_node = _create_element_node(self.document)
+        new_child_node = _create_element_node(self.document)
+        old_child_node = _create_element_node(self.document)
         parent_node.append_child(old_child_node)
         # Testing
         parent_node.replace_child(new_child_node, old_child_node)
@@ -458,12 +464,11 @@ class TestMethod_ReplaceChild(unittest.TestCase):
         #     <new_child_node/>
         # <document>
         # ======================================
-        document = _create_document_node()
         parent_node_readonly = Node(node_type=NodeType.ELEMENT_NODE,
                                     node_name='tagName',
-                                    owner_document=document,
+                                    owner_document=self.document,
                                     read_only=True)
-        new_child_node = _create_element_node(document)
+        new_child_node = _create_element_node(self.document)
         try:
             parent_node_readonly.append_child(new_child_node)
         except DOMException as e:
@@ -474,6 +479,10 @@ class TestMethod_ReplaceChild(unittest.TestCase):
 
 
 class TestMethod_HasChild(unittest.TestCase):
+    def setUp(self) -> None:
+        self.document = _create_document_node()
+        return super().setUp()
+
     def test_True(self):
         # ======================================
         # <document>
@@ -482,9 +491,8 @@ class TestMethod_HasChild(unittest.TestCase):
         #     </parent_node>
         # <document>
         # ======================================
-        document = _create_document_node()
-        parent_node = _create_element_node(document)
-        child_node = _create_element_node(document)
+        parent_node = _create_element_node(self.document)
+        child_node = _create_element_node(self.document)
         parent_node.append_child(child_node)
         # Testing
         self.assertTrue(parent_node.has_child_nodes())
@@ -495,10 +503,71 @@ class TestMethod_HasChild(unittest.TestCase):
         #     <node/>
         # <document>
         # ======================================
-        document = _create_document_node()
-        node = _create_element_node(document)
+        node = _create_element_node(self.document)
         # Testing
         self.assertFalse(node.has_child_nodes())
+
+
+class TestMethod_RemoveChild(unittest.TestCase):
+    def setUp(self) -> None:
+        self.document = _create_document_node()
+        return super().setUp()
+
+    def test_RemoveExistingChlid(self):
+        # ======================================
+        # <document>
+        #     <parent_node>
+        #         <child_node/>
+        #     </parent_node>
+        # <document>
+        # ======================================
+        parent_node = _create_element_node(self.document)
+        child_node = _create_element_node(self.document)
+        parent_node.append_child(child_node)
+        # Testing
+        parent_node.remove_child(child_node)
+        self.assertNotIn(child_node, parent_node.child_nodes)
+        self.assertIsNone(child_node.parent_node)
+
+    def test_Raises_NOT_FOUND_ERR(self):
+        # ======================================
+        # <document>
+        #     <parent_node/>
+        #     <child_node/>
+        # <document>
+        # ======================================
+        parent_node = _create_element_node(self.document)
+        child_node = _create_element_node(self.document)
+        # Testing
+        try:
+            parent_node.remove_child(child_node)
+        except DOMException as de:
+            self.assertEqual(de.args[0], DOMException.NOT_FOUND_ERR)
+        else:
+            self.fail()
+
+    def test_Raises_NO_MODIFICATION_ALLOWED_ERR(self):
+        # ======================================
+        # <document>
+        #     <parent_node read-only="true">
+        #         <child_node/>
+        #     </parent_node>
+        # <document>
+        # ======================================
+        child_node = _create_element_node(self.document)
+        parent_node = Node(node_type=NodeType.ELEMENT_NODE,
+                           node_name='tagName',
+                           owner_document=self.document,
+                           child_nodes=[child_node],
+                           read_only=True)
+        # Testing
+        try:
+            parent_node.remove_child(child_node)
+        except DOMException as de:
+            code = de.args[0]
+            self.assertEqual(code, DOMException.NO_MODIFICATION_ALLOWED_ERR)
+        else:
+            self.fail()
 
 
 if __name__ == '__main__':
