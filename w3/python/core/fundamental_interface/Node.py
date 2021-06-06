@@ -322,7 +322,9 @@ class Node:
             raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
         if self.owner_document is not new_child.owner_document:
             raise DOMException(DOMException.WRONG_DOCUMENT_ERR)
-        # `HIERARCHY_REQUEST_ERR` should be checked on subclasses by overriding.
+        # `HIERARCHY_REQUEST_ERR` should be checked on subclasses by overriding.        # `HIERARCHY_REQUEST_ERR` should be checked on subclasses by overriding.
+        if new_child in self.child_nodes:
+            self.child_nodes.remove(new_child)
         if new_child.node_type == NodeType.DOCUMENT_FRAGMENT_NODE:
             grand_child_node: _AnyNode
             for grand_child_node in new_child.child_nodes:
