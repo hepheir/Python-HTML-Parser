@@ -124,11 +124,12 @@ class Test_ParentNode(unittest.TestCase):
         parent_node = _create_element_node(document)
         child_node = _create_element_node(document)
         try:
-            child_node.parent_node = parent_node
+            child_node.parent_node = parent_node  # type: ignore
         except:
             self.assertNotEqual(child_node.parent_node, parent_node)
         else:
             self.fail()
+
 
 class Test_InsertBefore(unittest.TestCase):
     def test_WithoutRefNode(self):
@@ -231,7 +232,6 @@ class Test_InsertBefore(unittest.TestCase):
             self.assertEqual(code, DOMException.NOT_FOUND_ERR)
         else:
             self.fail()
-
 
 
 class Test_AppendChild(unittest.TestCase):
