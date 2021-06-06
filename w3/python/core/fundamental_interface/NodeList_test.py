@@ -34,18 +34,20 @@ def _make_nodes(n: int, document: Optional[Node] = None) -> Iterator[Node]:
         yield _create_text_node(document)
 
 
-class Test_Dunder(unittest.TestCase):
-    def testInit_Empty(self):
+class TestDunder_Init(unittest.TestCase):
+    def test_EmptyList(self):
         NodeList()
 
-    def testInit_SingleNode(self):
+    def test_SingleNode(self):
         node = next(_make_nodes(1))
         NodeList([node])
 
-    def testInit_MultipleNodes(self):
+    def test_MultipleNodes(self):
         NodeList(_make_nodes(4))
 
-    def testIter(self):
+
+class TestDunder_Iter(unittest.TestCase):
+    def test_ForLoop(self):
         nodes = [*_make_nodes(4)]
         node_list = NodeList(nodes)
         # Create an iterator for checking
@@ -53,7 +55,9 @@ class Test_Dunder(unittest.TestCase):
         for list_elem in node_list:
             self.assertEqual(list_elem, next(node_iter))
 
-    def testBool(self):
+
+class TestDunder_Bool(unittest.TestCase):
+    def test_Raw(self):
         # Empty `NodeList` should equal False.
         node_list = NodeList()
         self.assertFalse(node_list)
@@ -61,20 +65,26 @@ class Test_Dunder(unittest.TestCase):
         node_list = NodeList(_make_nodes(2))
         self.assertTrue(node_list)
 
-    def testGetItem(self):
+
+class TestDunder_GetItem(unittest.TestCase):
+    def test_IntegerIndex(self):
         nodes = [*_make_nodes(4)]
         node_list = NodeList(nodes)
         for i in range(4):
             self.assertEqual(node_list[i], nodes[i])
 
-    def testSetItem(self):
+
+class TestDunder_SetItem(unittest.TestCase):
+    def test_IntegerIndex(self):
         document = _create_document_node()
         text_node = _create_text_node(document)
         node_list = NodeList(_make_nodes(4, document))
         node_list[2] = text_node
         self.assertEqual(node_list[2], text_node)
 
-    def testContains(self):
+
+class TestDunder_Contains(unittest.TestCase):
+    def test_In(self):
         nodes = [*_make_nodes(4)]
         node_list = NodeList(nodes)
         for n in node_list:
@@ -87,7 +97,7 @@ class Test_Dunder(unittest.TestCase):
         self.assertNotIn(external_node, node_list)
 
 
-class Test_Length(unittest.TestCase):
+class TestProperty_Length(unittest.TestCase):
     def test_Empty(self):
         node_list = NodeList()
         self.assertEqual(node_list.length, 0)
@@ -101,7 +111,7 @@ class Test_Length(unittest.TestCase):
         self.assertEqual(node_list.length, 5)
 
 
-class Test_Item(unittest.TestCase):
+class TestMethod_Item(unittest.TestCase):
     def test_InSize(self):
         nodes = [*_make_nodes(5)]
         node_list = NodeList(nodes)

@@ -18,8 +18,8 @@ def _create_element_node(document: Node):
                 owner_document=document)
 
 
-class Test_Dunder(unittest.TestCase):
-    def testInit(self):
+class TestDunder_Init(unittest.TestCase):
+    def test_Default(self):
         # Creating document node.
         document = Node(node_type=NodeType.DOCUMENT_NODE,
                         node_name='#document',
@@ -30,7 +30,7 @@ class Test_Dunder(unittest.TestCase):
         self.assertEqual(document.node_value, '')
 
 
-class Test_NodeValue(unittest.TestCase):
+class TestProperty_NodeValue(unittest.TestCase):
     def testGetter(self):
         document = _create_document_node()
         text = Node(node_type=NodeType.TEXT_NODE,
@@ -75,7 +75,7 @@ class Test_NodeValue(unittest.TestCase):
         self.assertEqual(text.node_value, 'foo')
 
 
-class Test_NodeType(unittest.TestCase):
+class TestProperty_NodeType(unittest.TestCase):
     def testGetter(self):
         document = _create_document_node()
         for node_type in NodeType:
@@ -103,7 +103,7 @@ class Test_NodeType(unittest.TestCase):
                 pass
 
 
-class Test_ParentNode(unittest.TestCase):
+class TestProperty_ParentNode(unittest.TestCase):
     def testConstrutor(self):
         document = _create_document_node()
         docfrag = Node(node_type=NodeType.DOCUMENT_FRAGMENT_NODE,
@@ -131,7 +131,7 @@ class Test_ParentNode(unittest.TestCase):
             self.fail()
 
 
-class Test_InsertBefore(unittest.TestCase):
+class TestMethod_InsertBefore(unittest.TestCase):
     def test_WithoutRefNode(self):
         # ======================================
         # <document>
@@ -286,7 +286,7 @@ class Test_InsertBefore(unittest.TestCase):
             self.fail()
 
 
-class Test_AppendChild(unittest.TestCase):
+class TestMethod_AppendChild(unittest.TestCase):
     def test_AppendNewChild(self):
         # ======================================
         # <document>
@@ -398,7 +398,7 @@ class Test_AppendChild(unittest.TestCase):
             self.fail()
 
 
-class Test_ReplaceChild(unittest.TestCase):
+class TestMethod_ReplaceChild(unittest.TestCase):
     def test_ReplaceExistingChild(self):
         # ======================================
         # <document>
@@ -473,7 +473,7 @@ class Test_ReplaceChild(unittest.TestCase):
             self.fail()
 
 
-class Test_HasChild(unittest.TestCase):
+class TestMethod_HasChild(unittest.TestCase):
     def test_True(self):
         # ======================================
         # <document>
