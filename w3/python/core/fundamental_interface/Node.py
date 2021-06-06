@@ -375,20 +375,27 @@ class Node:
              -  `WRONG_DOCUMENT_ERR`: Raised if `new_child` was created from a different document than the one that created this node.
              -  `NO_MODIFICATION_ALLOWED_ERR`: Raised if this node is readonly.
         """
+        # `HIERARCHY_REQUEST_ERR` should be checked on subclasses by overriding.
         if self._read_only:
             raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
-        if self.owner_document is not new_child.owner_document:
+        if new_child.owner_document is not self.owner_document:
             raise DOMException(DOMException.WRONG_DOCUMENT_ERR)
-        # `HIERARCHY_REQUEST_ERR` should be checked on subclasses by overriding.        # `HIERARCHY_REQUEST_ERR` should be checked on subclasses by overriding.
-        if new_child in self.child_nodes:
-            self.child_nodes.remove(new_child)
+        # If `new_child` is a `DocumentFragment` object,
+        # all of its children are appended, in the same order.
+        #
+        # This is done by recursive calls.
         if new_child.node_type == NodeType.DOCUMENT_FRAGMENT_NODE:
             grand_child_node: _AnyNode
             for grand_child_node in new_child.child_nodes:
                 self.append_child(grand_child_node)
-        else:
-            new_child._set_parent_node(self)
-            self.child_nodes.append(new_child)
+            return new_child
+        # If the `new_child` is already in the tree,
+        # it is first removed.
+        if new_child in self.child_nodes:
+            self.child_nodes.remove(new_child)
+        # Otherwise, simply append `new_child` using the methods of `NodeList(list)`.
+        self.child_nodes.append(new_child)
+        new_child._set_parent_node(self)
         return new_child
 
     def has_child_nodes(self) -> bool:
