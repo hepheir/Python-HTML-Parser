@@ -301,6 +301,47 @@ class Node:
         new_child._set_parent_node(self)
         return new_child
 
+    def replace_child(self,
+                      new_child: _AnyNode,
+                      old_child: _AnyNode) -> _AnyNode:
+        """Replaces the child node `old_child` with `new_child` in the list of children, and returns the `old_child` node.
+
+        If the `new_child` is already in the tree, it is first removed.
+
+        Args:
+            new_child: The new node to put in the child list.
+            old_child: The node being replaced in the list.
+
+        Returns:
+            The node replaced.
+
+        Raisees:
+            DOMException:
+              - `HIERARCHY_REQUEST_ERR`: Raised if this node is of a type that does not allow children of the type of the `new_child` node, or it the node to put in is one of this node's ancestors.
+              - `WRONG_DOCUMENT_ERR`: Raised if `new_child` was created from a different document than the one that created this node.
+              - `NO_MODIFICATION_ALLOWED_ERR`: Raised if this node is readonly.
+              - `NOT_FOUND_ERR`: Raised if `old_child` is not a child of this node.
+        """
+        # `HIERARCHY_REQUEST_ERR` should be checked on subclasses by overriding.
+        if self._read_only:
+            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
+        if new_child.owner_document is not self.owner_document:
+            raise DOMException(DOMException.WRONG_DOCUMENT_ERR)
+        if old_child not in self.child_nodes:
+            raise DOMException(DOMException.NOT_FOUND_ERR)
+        # If `new_child` and `old_child` share the same reference,
+        # this method does nothing.
+        if new_child is old_child:
+            return old_child
+        # If the `new_child` is already in the tree,
+        # it is first removed.
+        if new_child in self.child_nodes:
+            self.child_nodes.remove(new_child)
+        repl_index = self.child_nodes.index(old_child)
+        self.child_nodes[repl_index] = new_child
+        new_child._set_parent_node(self)
+        return old_child
+
     def append_child(self, new_child: _AnyNode) -> _AnyNode:
         """Adds the node `new_child` to the end of the list of children of this node.
 
