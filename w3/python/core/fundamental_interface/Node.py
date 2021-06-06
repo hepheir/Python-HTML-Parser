@@ -64,11 +64,10 @@ class Node:
     def __init__(self,
                  node_type: NodeType,
                  node_name: DOMString,
+                 owner_document: Optional[_Document],
                  node_value: Optional[DOMString] = None,
-                 parent_node: Optional[_AnyNode] = None,
                  child_nodes: Optional[Iterable[_AnyNode]] = None,
                  attributes: Optional[Iterable[_AnyNode]] = None,
-                 owner_document: Optional[_Document] = None,
                  read_only: bool = False) -> None:
         if node_value is None:
             node_value = ''
@@ -76,7 +75,7 @@ class Node:
         self._set_node_type(node_type)
         self._set_node_name(node_name)
         self._set_node_value(node_value)
-        self._set_parent_node(parent_node)
+        self._set_parent_node(None)
         self._init_child_nodes(child_nodes)
         self._init_attributes(attributes)
         self._set_owner_document(owner_document)
@@ -85,21 +84,11 @@ class Node:
         self._node_type: NodeType
         self._node_name: DOMString
         self._node_value: DOMString
-        self._parent_node: _AnyNode
+        self._parent_node: Optional[_AnyNode]
         self._child_nodes: NodeList
         self._attributes: _NamedNodeMap
-        self._owner_document: _Document
+        self._owner_document: Optional[_Document]
         self._read_only: bool
-
-    def _check_modifiable(self) -> None:
-        """Checks if this node is modifiable.
-
-        Raises:
-            DOMException:
-            - `NO_MODIFICATION_ALLOWED_ERR`: Raised when the node is readonly.
-        """
-        if self._read_only:
-            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
 
     @property
     def node_name(self) -> DOMString:
@@ -132,7 +121,8 @@ class Node:
             DOMException:
             - `NO_MODIFICATION_ALLOWED_ERR`: Raised when the node is readonly.
         """
-        self._check_modifiable()
+        if self._read_only:
+            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
         self._node_value = DOMString(value)
 
     @property
@@ -188,7 +178,7 @@ class Node:
 
         If there is no such node, this returns `None`.
         """
-        if not self.child_nodes:
+        if not self.has_child_nodes():
             return None
         return self.child_nodes.item(0)
 
@@ -198,7 +188,7 @@ class Node:
 
         If there is no such node, this returns `None`.
         """
-        if not self.child_nodes:
+        if not self.has_child_nodes():
             return None
         return self.child_nodes.item(self.child_nodes.length-1)
 
@@ -257,14 +247,235 @@ class Node:
         This is also the `Document` object used to create new nodes.
         When this node is a `Document` this is `None`.
         """
-        if self.node_type == NodeType.DOCUMENT_NODE:
-            return None
         return self._owner_document
 
     def _set_owner_document(self,
                             owner_document: Optional[_Document] = None) -> None:
         """Indirect accessor to set the 'owner_document' property."""
+        if owner_document is None:
+            if self.node_type != NodeType.DOCUMENT_NODE:
+                raise ValueError('`Node` should have a `Document` object ',
+                                 'which associated with this node, ',
+                                 'Unless this node is a `Document`.')
         self._owner_document = owner_document
+
+    def insert_before(self,
+                      new_child: _AnyNode,
+                      ref_child: Optional[_AnyNode] = None) -> _AnyNode:
+        """Inserts the node `new_child` before the existing child node `ref_child`. If `ref_child` is `None`, insert `new_child` at the end of the list of children.
+
+        If `new_child` is a `DocumentFragment` object, all of its children are inserted, in the same order, before `ref_child`. If the `new_child` is already in the tree, it is first removed.
+
+        Args:
+            new_child: The node to insert.
+            ref_child: The reference node, i.e., the node before which the new node must be inserted.
+
+        Returns:
+            The node being inserted.
+
+        Raises:
+            DOMException:
+              - `HIERARCHY_REQUEST_ERR`: Raised if this node is of a type that does not allow children of the type of the `new_child` node, or if the node to insert is one of this node's ancestors.
+              - `WRONG_DOCUMENT_ERR`: Raised if `new_child` was created from a different document than the one that created this node.
+              - `NO_MODIFICATION_ALLOWED_ERR`: Raised if this node is readonly.
+              - `NOT_FOUND_ERR`: Raised if `ref_child` is not a child of this node.
+        """
+        # `HIERARCHY_REQUEST_ERR` should be checked on subclasses by overriding.
+        if self._read_only:
+            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
+        if new_child.owner_document is not self.owner_document:
+            raise DOMException(DOMException.WRONG_DOCUMENT_ERR)
+        if ref_child is not None:
+            if ref_child not in self.child_nodes:
+                raise DOMException(DOMException.NOT_FOUND_ERR)
+        # If `new_child` and `old_child` share the same reference,
+        # this method does nothing.
+        if new_child is ref_child:
+            return new_child
+        # If `ref_child` is null, insert `new_child` at the end of the list of children.
+        #
+        # This operation is equivalent to the `append_child()` method.
+        if ref_child is None:
+            self.append_child(new_child)
+            return new_child
+        # If `new_child` is a `DocumentFragment` object,
+        # all of its children are inserted, in the same order.
+        #
+        # This is done by recursive calls.
+        if new_child.node_type == NodeType.DOCUMENT_FRAGMENT_NODE:
+            grand_child_node: _AnyNode
+            for grand_child_node in new_child.child_nodes:
+                self.insert_before(grand_child_node, ref_child)
+            return new_child
+        # If the `new_child` is already in the tree,
+        # it is first removed.
+        if new_child in self.child_nodes:
+            self.remove_child(new_child)
+        # Otherwise, simply insert `new_child` using the methods of `NodeList(list)`.
+        ref_index = self.child_nodes.index(ref_child)
+        self.child_nodes.insert(ref_index, new_child)
+        new_child._set_parent_node(self)
+        return new_child
+
+    def replace_child(self,
+                      new_child: _AnyNode,
+                      old_child: _AnyNode) -> _AnyNode:
+        """Replaces the child node `old_child` with `new_child` in the list of children, and returns the `old_child` node.
+
+        If the `new_child` is already in the tree, it is first removed.
+
+        Args:
+            new_child: The new node to put in the child list.
+            old_child: The node being replaced in the list.
+
+        Returns:
+            The node replaced.
+
+        Raisees:
+            DOMException:
+              - `HIERARCHY_REQUEST_ERR`: Raised if this node is of a type that does not allow children of the type of the `new_child` node, or it the node to put in is one of this node's ancestors.
+              - `WRONG_DOCUMENT_ERR`: Raised if `new_child` was created from a different document than the one that created this node.
+              - `NO_MODIFICATION_ALLOWED_ERR`: Raised if this node is readonly.
+              - `NOT_FOUND_ERR`: Raised if `old_child` is not a child of this node.
+        """
+        # `HIERARCHY_REQUEST_ERR` should be checked on subclasses by overriding.
+        if self._read_only:
+            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
+        if new_child.owner_document is not self.owner_document:
+            raise DOMException(DOMException.WRONG_DOCUMENT_ERR)
+        if old_child not in self.child_nodes:
+            raise DOMException(DOMException.NOT_FOUND_ERR)
+        # If `new_child` and `old_child` share the same reference,
+        # this method does nothing.
+        if new_child is old_child:
+            return old_child
+        # If the `new_child` is already in the tree,
+        # it is first removed.
+        if new_child in self.child_nodes:
+            self.remove_child(new_child)
+        repl_index = self.child_nodes.index(old_child)
+        self.child_nodes[repl_index] = new_child
+        new_child._set_parent_node(self)
+        return old_child
+
+    def remove_child(self,
+                     old_child: _AnyNode) -> _AnyNode:
+        """Removes the child node indicated by `old_chlid` from the list of children, and returns it.
+
+        Args:
+            old_chlid: The node being removed.
+
+        Returns:
+            The node removed.
+
+        Raises:
+            DOMException:
+              - `NO_MODIFICATION_ALLOWED_ERR`: Raised if this node is readonly.
+              - `NOT_FOUND_ERR`: Raised if `old_chlid` is not a child of this node.
+        """
+        # `HIERARCHY_REQUEST_ERR` should be checked on subclasses by overriding.
+        if self._read_only:
+            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
+        if old_child not in self.child_nodes:
+            raise DOMException(DOMException.NOT_FOUND_ERR)
+        # Removes node using the method of `NodeList(list)`.
+        self.child_nodes.remove(old_child)
+        old_child._set_parent_node(None)
+        return old_child
+
+    def append_child(self, new_child: _AnyNode) -> _AnyNode:
+        """Adds the node `new_child` to the end of the list of children of this node.
+
+        If the `new_child` is already in the tree, it is first removed.
+
+        Args:
+            new_child: The node to add. If it is a `DocumentFragment` object, the entire contents of the document fragment are moved into the child list of this node
+
+        Returns:
+            The node added.
+
+        Raises:
+            DOMException:
+             -  `HIERARCHY_REQUEST_ERR`: Raised if this node is of a type that does not allow children of the type of the `new_child` node, or if the node to append is one of this node's ancestors.
+             -  `WRONG_DOCUMENT_ERR`: Raised if `new_child` was created from a different document than the one that created this node.
+             -  `NO_MODIFICATION_ALLOWED_ERR`: Raised if this node is readonly.
+        """
+        # `HIERARCHY_REQUEST_ERR` should be checked on subclasses by overriding.
+        if self._read_only:
+            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
+        if new_child.owner_document is not self.owner_document:
+            raise DOMException(DOMException.WRONG_DOCUMENT_ERR)
+        # If `new_child` is a `DocumentFragment` object,
+        # all of its children are appended, in the same order.
+        #
+        # This is done by recursive calls.
+        if new_child.node_type == NodeType.DOCUMENT_FRAGMENT_NODE:
+            grand_child_node: _AnyNode
+            for grand_child_node in new_child.child_nodes:
+                self.append_child(grand_child_node)
+            return new_child
+        # If the `new_child` is already in the tree,
+        # it is first removed.
+        if new_child in self.child_nodes:
+            self.remove_child(new_child)
+        # Otherwise, simply append `new_child` using the methods of `NodeList(list)`.
+        self.child_nodes.append(new_child)
+        new_child._set_parent_node(self)
+        return new_child
+
+    def has_child_nodes(self) -> bool:
+        """This is a convenience method to allow easy determination of whether a node has any children.
+
+        Returns:
+            `True` if the node has any children, `False` if the node has no children.
+        """
+        return bool(self.child_nodes)
+
+    def clone_node(self, deep: bool = False) -> _AnyNode:
+        """Returns a duplicate of this node.
+
+        i.e., serves as a generic copy constructor for nodes. The duplicate node has no parent (parentNode returns `None`.).
+        Cloning an `Element` copies all attributes and their values, including those generated by the XML processor to represent defaulted attributes, but this method does not copy any text it contains unless it is a deep clone, since the text is contained in a child `Text` node.
+        Cloning any other type of node simply returns a copy of this node.
+
+        Args:
+            deep: If `True`, recursively clone the subtree under the specified node; if `False`, clone only the node itself (and its attributes, if it is an `Element`).
+
+        Returns:
+            The duplicate node.
+
+        This method raises no exceptions.
+        """
+        if deep:
+            return self._deep_copy()
+        else:
+            return self._shallow_copy()
+
+    def _shallow_copy(self) -> _AnyNode:
+        node = self.__class__(
+            owner_document=self.owner_document,
+            node_type=self.node_type,
+            node_name=self.node_name,
+            node_value=self.node_value,
+            read_only=self._read_only
+        )
+        return node
+
+    def _deep_copy(self) -> _AnyNode:
+        def copy_recursive(node_iterable: Iterable[_AnyNode]):
+            node: _AnyNode
+            for node in node_iterable:
+                yield node.clone_node(True)
+        node = self.__class__(
+            owner_document=self.owner_document,
+            node_type=self.node_type,
+            node_name=self.node_name,
+            node_value=self.node_value,
+            child_nodes=copy_recursive(self.child_nodes),
+            attributes=copy_recursive(self.attributes.values()),
+            read_only=self._read_only
+        )
+        return node
 
 
 _AnyNode = Node
