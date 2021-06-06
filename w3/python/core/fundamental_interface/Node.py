@@ -310,7 +310,7 @@ class Node:
         # If the `new_child` is already in the tree,
         # it is first removed.
         if new_child in self.child_nodes:
-            self.child_nodes.remove(new_child)
+            self.remove_child(new_child)
         # Otherwise, simply insert `new_child` using the methods of `NodeList(list)`.
         ref_index = self.child_nodes.index(ref_child)
         self.child_nodes.insert(ref_index, new_child)
@@ -352,10 +352,35 @@ class Node:
         # If the `new_child` is already in the tree,
         # it is first removed.
         if new_child in self.child_nodes:
-            self.child_nodes.remove(new_child)
+            self.remove_child(new_child)
         repl_index = self.child_nodes.index(old_child)
         self.child_nodes[repl_index] = new_child
         new_child._set_parent_node(self)
+        return old_child
+
+    def remove_child(self,
+                     old_child: _AnyNode) -> _AnyNode:
+        """Removes the child node indicated by `old_chlid` from the list of children, and returns it.
+
+        Args:
+            old_chlid: The node being removed.
+
+        Returns:
+            The node removed.
+
+        Raises:
+            DOMException:
+              - `NO_MODIFICATION_ALLOWED_ERR`: Raised if this node is readonly.
+              - `NOT_FOUND_ERR`: Raised if `old_chlid` is not a child of this node.
+        """
+        # `HIERARCHY_REQUEST_ERR` should be checked on subclasses by overriding.
+        if self._read_only:
+            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
+        if old_child not in self.child_nodes:
+            raise DOMException(DOMException.NOT_FOUND_ERR)
+        # Removes node using the method of `NodeList(list)`.
+        self.child_nodes.remove(old_child)
+        old_child._set_parent_node(None)
         return old_child
 
     def append_child(self, new_child: _AnyNode) -> _AnyNode:
@@ -392,7 +417,7 @@ class Node:
         # If the `new_child` is already in the tree,
         # it is first removed.
         if new_child in self.child_nodes:
-            self.child_nodes.remove(new_child)
+            self.remove_child(new_child)
         # Otherwise, simply append `new_child` using the methods of `NodeList(list)`.
         self.child_nodes.append(new_child)
         new_child._set_parent_node(self)
