@@ -545,5 +545,10 @@ class TestMethod_RemoveChild(unittest.TestCase):
                          DOMException.NO_MODIFICATION_ALLOWED_ERR)
 
 
+class TestMethod_CloneNode(unittest.TestCase):
+    # TODO
+    pass
+
+
 if __name__ == '__main__':
     unittest.main()
