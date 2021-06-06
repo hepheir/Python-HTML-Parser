@@ -119,6 +119,16 @@ class Test_ParentNode(unittest.TestCase):
         parent_node.append_child(child_node)
         self.assertEqual(child_node.parent_node, parent_node)
 
+    def testSetter_Raises_Exception(self):
+        document = _create_document_node()
+        parent_node = _create_element_node(document)
+        child_node = _create_element_node(document)
+        try:
+            child_node.parent_node = parent_node
+        except:
+            self.assertNotEqual(child_node.parent_node, parent_node)
+        else:
+            self.fail()
 
 class Test_InsertBefore(unittest.TestCase):
     def test_WithoutRefNode(self):
