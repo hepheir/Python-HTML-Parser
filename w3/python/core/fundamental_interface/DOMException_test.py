@@ -3,15 +3,13 @@ import unittest
 from w3.dom import DOMException
 
 
-class Test_DOMException(unittest.TestCase):
+class TestProperty_Code(unittest.TestCase):
     def test_raise_INDEX_SIZE_ERR(self):
-        try:
+        with self.assertRaises(DOMException) as context_manager:
             raise DOMException(DOMException.INDEX_SIZE_ERR)
-        except DOMException as e:
-            code = e.args[0]
-            self.assertEqual(code, DOMException.INDEX_SIZE_ERR)
-        else:
             self.fail()
+        self.assertEqual(context_manager.exception.code,
+                         DOMException.INDEX_SIZE_ERR)
 
 
 if __name__ == '__main__':
