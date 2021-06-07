@@ -1,6 +1,4 @@
-from __future__ import absolute_import
-
-from w3.python.core.type.DOMString import DOMString
+from w3.python.typing import _DOMString
 
 
 class DOMImplementation:
@@ -12,8 +10,8 @@ class DOMImplementation:
 
     # TODO
     def has_feature(self,
-                   feature: DOMString,
-                   version: DOMString) -> bool:
+                    feature: _DOMString,
+                    version: _DOMString) -> bool:
         """<NOT IMPLEMENTED>
         Test if the DOM implementation implements a specific feature.
 
