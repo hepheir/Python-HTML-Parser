@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from w3.python.core.type.DOMString import DOMString
+from w3.python.core.DOMString import DOMString
 
 
 class DOMImplementation:
