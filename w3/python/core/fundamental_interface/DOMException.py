@@ -1,7 +1,4 @@
-import enum
-
-
-class ExceptionCode(enum.IntEnum):
+class ExceptionCode(int):
     """Definition group `ExceptionCode`
     An integer indicating the type of error generated.
     """
