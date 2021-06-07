@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import enum
-from typing import Dict, Iterable, Optional
+from typing import Iterable, Optional
 
 from w3.python.core.fundamental_interface.DOMException import DOMException
 from w3.python.core.fundamental_interface.NodeList import NodeList
-from w3.python.core.type.DOMString import DOMString
+
+from w3.python.typing import _AnyNode, _Attr, _Document, _DOMString, _NamedNodeMap
 
 
 class NodeType(enum.IntEnum):
@@ -63,9 +64,9 @@ class Node:
 
     def __init__(self,
                  node_type: NodeType,
-                 node_name: DOMString,
+                 node_name: _DOMString,
                  owner_document: Optional[_Document],
-                 node_value: Optional[DOMString] = None,
+                 node_value: Optional[_DOMString] = None,
                  child_nodes: Optional[Iterable[_AnyNode]] = None,
                  attributes: Optional[Iterable[_AnyNode]] = None,
                  read_only: bool = False) -> None:
@@ -82,8 +83,8 @@ class Node:
         self._read_only = bool(read_only)
         # Attributes
         self._node_type: NodeType
-        self._node_name: DOMString
-        self._node_value: DOMString
+        self._node_name: _DOMString
+        self._node_value: _DOMString
         self._parent_node: Optional[_AnyNode]
         self._child_nodes: NodeList
         self._attributes: _NamedNodeMap
@@ -91,16 +92,16 @@ class Node:
         self._read_only: bool
 
     @property
-    def node_name(self) -> DOMString:
+    def node_name(self) -> _DOMString:
         """Read only; The name of this node, depending on its type."""
         return self._node_name
 
-    def _set_node_name(self, name: DOMString) -> None:
+    def _set_node_name(self, name: _DOMString) -> None:
         """Indirect accessor to set the 'node_name' property."""
-        self._node_name = DOMString(name)
+        self._node_name = _DOMString(name)
 
     @property
-    def node_value(self) -> DOMString:
+    def node_value(self) -> _DOMString:
         """The value of this node, depending on its type.
 
         Raises:
@@ -111,10 +112,10 @@ class Node:
         return self._node_value
 
     @node_value.setter
-    def node_value(self, value: DOMString) -> None:
+    def node_value(self, value: _DOMString) -> None:
         self._set_node_value(value)
 
-    def _set_node_value(self, value: DOMString) -> None:
+    def _set_node_value(self, value: _DOMString) -> None:
         """Indirect accessor to set the 'node_value' property.
 
         Raises:
@@ -123,7 +124,7 @@ class Node:
         """
         if self._read_only:
             raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
-        self._node_value = DOMString(value)
+        self._node_value = _DOMString(value)
 
     @property
     def node_type(self) -> NodeType:
@@ -233,7 +234,7 @@ class Node:
         return self._attributes
 
     def _init_attributes(self,
-                         attributes: Optional[Iterable[_AnyNode]] = None) -> None:
+                         attributes: Optional[Iterable[_Attr]] = None) -> None:
         self._attributes: _NamedNodeMap = {}  # TODO: Replace with real NamedNodeMap #19
         if attributes is None:
             return
@@ -476,8 +477,3 @@ class Node:
             read_only=self._read_only
         )
         return node
-
-
-_AnyNode = Node
-_NamedNodeMap = Dict[str, _AnyNode]  # TODO: Implement NamedNodeMap (#19)
-_Document = Node  # TODO: Implement Document (#20)
