@@ -1,11 +1,9 @@
 from __future__ import annotations
 
+from ctypes import c_ushort, c_ulong
 from typing import Callable
 
 from w3.python.core.type import DOMString
-from w3.python.core.fundamental_interface.Node import Node
-from w3.python.core.fundamental_interface.Node import NodeType
-from w3.python.typing import *
 
 
 class DOMImplementation:
@@ -34,6 +32,66 @@ class DOMImplementation:
         raise NotImplementedError
 
 
+class NodeList:
+    item: Callable[[c_ulong], Node]
+    length: c_ulong
+
+
+class NamedNodeMap:
+    getNamedItem: Callable[[DOMString], Node]
+    setNamedItem: Callable[[Node], Node]
+    removeNamedItem: Callable[[DOMString], Node]
+    item: Callable[[c_ulong], Node]
+    length: c_ulong
+
+
+class Node:
+    """Interface `Node`
+
+    The `Node` interface is the primary datatype for the entire Document Object Model.
+    It represents a single node in the document tree.
+    While all objects implementing the `Node` interface expose methods for dealing with children, not all objects implementing the `Node` interface may have children.
+    For example, `Text` nodes may not have children, and adding children to such nodes results in a `DOMException` being raised.
+
+    The attributes `node_name`, `node_value` and attributes are included as a mechanism to get at node information without casting down to the specific derived interface.
+    In cases where there is no obvious mapping of these attributes for a specific `node_type` (e.g., `node_value` for an Element or `attributes` for a Comment), this returns `None`.
+    Note that the specialized interfaces may contain additional and more convenient mechanisms to get and set the relevant information.
+    """
+
+    # Definition group `NodeType`
+    # An integer indicating which type of node this is.
+    ELEMENT_NODE: c_ushort = c_ushort(1)
+    ATTRIBUTE_NODE: c_ushort = c_ushort(2)
+    TEXT_NODE: c_ushort = c_ushort(3)
+    CDATA_SECTION_NODE: c_ushort = c_ushort(4)
+    ENTITY_REFERENCE_NODE: c_ushort = c_ushort(5)
+    ENTITY_NODE: c_ushort = c_ushort(6)
+    PROCESSING_INSTRUCTION_NODE: c_ushort = c_ushort(7)
+    COMMENT_NODE: c_ushort = c_ushort(8)
+    DOCUMENT_NODE: c_ushort = c_ushort(9)
+    DOCUMENT_TYPE_NODE: c_ushort = c_ushort(10)
+    DOCUMENT_FRAGMENT_NODE: c_ushort = c_ushort(11)
+    NOTATION_NODE: c_ushort = c_ushort(12)
+
+    nodeName: DOMString
+    nodeValue: DOMString
+    nodeType: c_ushort
+    parentNode: Node
+    childNodes: NodeList
+    firstChild: Node
+    lastChild: Node
+    previousSibling: Node
+    nextSibling: Node
+    attributes: NamedNodeMap
+    ownerDocument: Document
+    insertBefore: Callable[[Node, Node], Node]
+    replaceChild: Callable[[Node, Node], Node]
+    removeChild: Callable[[Node], Node]
+    appendChild: Callable[[Node], Node]
+    hasChildNodes: Callable[[], bool]
+    cloneNodes: Callable[[bool], Node]
+
+
 class DocumentFragment(Node):
     """Interface `DocumentFragment`
 
@@ -60,10 +118,76 @@ class DocumentFragment(Node):
                  owner_document: Document,
                  read_only: bool = False) -> None:
         super().__init__(owner_document=owner_document,
-                         node_type=NodeType.DOCUMENT_FRAGMENT_NODE,
+                         node_type=Node.DOCUMENT_FRAGMENT_NODE,
                          node_name='#document-fragment',
                          node_value=None,
                          read_only=read_only)
+
+
+class Attr(Node):
+    name: DOMString
+    specified: bool
+    value: DOMString
+
+
+class Element(Node):
+    tagName: DOMString
+    getAttribute: Callable[[DOMString], DOMString]
+    setAttribute: Callable[[DOMString, DOMString], None]
+    removeAttribute: Callable[[DOMString], None]
+    getAttributeNode: Callable[[DOMString], Attr]
+    setAttributeNode: Callable[[Attr], Attr]
+    removeAttributeNode: Callable[[Attr], Attr]
+    getElementsByTagName: Callable[[DOMString], NodeList]
+    normalize: Callable[[], None]
+
+
+class CharacterData(Node):
+    data: DOMString
+    length: c_ulong
+    substringData: Callable[[c_ulong, c_ulong], DOMString]
+    appendData: Callable[[DOMString], None]
+    insertData: Callable[[c_ulong, DOMString], None]
+    deleteData: Callable[[c_ulong, c_ulong], None]
+    replaceData: Callable[[c_ulong, c_ulong, DOMString], None]
+
+
+class Comment(CharacterData):
+    pass
+
+
+class Text(CharacterData):
+    splitText: Callable[[c_ulong], Text]
+
+
+class CDATASection(Text):
+    pass
+
+
+class DocumentType(Node):
+    name: DOMString
+    entities: NamedNodeMap
+    notations: NamedNodeMap
+
+
+class Notation(Node):
+    publicId: DOMString
+    systemId: DOMString
+
+
+class Entity(Node):
+    publicId: DOMString
+    systemId: DOMString
+    notationName: DOMString
+
+
+class EntityReference(Node):
+    pass
+
+
+class ProcessingInstruction(Node):
+    target: DOMString
+    data: DOMString
 
 
 class Document(Node):
@@ -76,22 +200,23 @@ class Document(Node):
     The `Node` objects created have a `ownerDocument`` attribute which associates them with the `Document` within whose context they were created.
     """
 
-    doctype: _DocumentType
+    doctype: DocumentType
     implementation: DOMImplementation
-    documentElement: _Element
-    createElement: Callable[[Document, DOMString], _Element]
-    createDocumentFragment: Callable[[Document], _DocumentFragment]
-    createTextNode: Callable[[Document, DOMString], _Text]
-    createComment: Callable[[Document, DOMString], _Comment]
-    createCDATASection: Callable[[Document, DOMString], _CDATASection]
-    createProcessingInstruction: Callable[[Document, DOMString, DOMString], _ProcessingInstruction]
-    createAttribute: Callable[[Document, DOMString], _Attr]
-    createEntityReference: Callable[[Document, DOMString], _EntityReference]
-    getElementsByTagName: Callable[[Document, DOMString], _NodeList]
+    documentElement: Element
+    createElement: Callable[[Document, DOMString], Element]
+    createDocumentFragment: Callable[[Document], DocumentFragment]
+    createTextNode: Callable[[Document, DOMString], Text]
+    createComment: Callable[[Document, DOMString], Comment]
+    createCDATASection: Callable[[Document, DOMString], CDATASection]
+    createProcessingInstruction: Callable[[
+        Document, DOMString, DOMString], ProcessingInstruction]
+    createAttribute: Callable[[Document, DOMString], Attr]
+    createEntityReference: Callable[[Document, DOMString], EntityReference]
+    getElementsByTagName: Callable[[Document, DOMString], NodeList]
 
     def __init__(self, read_only: bool = False) -> None:
         super().__init__(owner_document=None,
-                         node_type=NodeType.DOCUMENT_NODE,
+                         node_type=Node.DOCUMENT_NODE,
                          node_name='#document',
                          node_value=None,
                          read_only=read_only)
