@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from typing import Callable
+
 from w3.python.core.type import DOMString
 from w3.python.core.fundamental_interface.Node import Node
 from w3.python.core.fundamental_interface.Node import NodeType
-from w3.python.typing import _Document
+from w3.python.typing import *
 
 
 class DOMImplementation:
@@ -53,10 +57,41 @@ class DocumentFragment(Node):
     """
 
     def __init__(self,
-                 owner_document: _Document,
+                 owner_document: Document,
                  read_only: bool = False) -> None:
         super().__init__(owner_document=owner_document,
                          node_type=NodeType.DOCUMENT_FRAGMENT_NODE,
                          node_name='#document-fragment',
+                         node_value=None,
+                         read_only=read_only)
+
+
+class Document(Node):
+    """Interface Document
+
+    The `Document` interface represents the entire HTML or XML document.
+    Conceptually, it is the root of the document tree, and provides the primary access to the document's data.
+
+    Since elements, text nodes, comments, processing instructions, etc. cannot exist outside the context of a `Document`, the `Document` interface also contains the factory methods needed to create these objects.
+    The `Node` objects created have a `ownerDocument`` attribute which associates them with the `Document` within whose context they were created.
+    """
+
+    doctype: _DocumentType
+    implementation: DOMImplementation
+    documentElement: _Element
+    createElement: Callable[[Document, DOMString], _Element]
+    createDocumentFragment: Callable[[Document], _DocumentFragment]
+    createTextNode: Callable[[Document, DOMString], _Text]
+    createComment: Callable[[Document, DOMString], _Comment]
+    createCDATASection: Callable[[Document, DOMString], _CDATASection]
+    createProcessingInstruction: Callable[[Document, DOMString, DOMString], _ProcessingInstruction]
+    createAttribute: Callable[[Document, DOMString], _Attr]
+    createEntityReference: Callable[[Document, DOMString], _EntityReference]
+    getElementsByTagName: Callable[[Document, DOMString], _NodeList]
+
+    def __init__(self, read_only: bool = False) -> None:
+        super().__init__(owner_document=None,
+                         node_type=NodeType.DOCUMENT_NODE,
+                         node_name='#document',
                          node_value=None,
                          read_only=read_only)
