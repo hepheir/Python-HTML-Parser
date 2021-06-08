@@ -3,7 +3,7 @@ from __future__ import annotations
 import enum
 from typing import Iterable, Optional
 
-from w3.python.core.fundamental_interface.DOMException import DOMException
+from w3.python.core.exception import DOMException
 from w3.python.core.fundamental_interface.NodeList import NodeList
 
 from w3.python.typing import _AnyNode, _Attr, _Document, _DOMString, _NamedNodeMap
