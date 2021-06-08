@@ -1,4 +1,3 @@
-from typing import Final
 from ctypes import c_ushort
 
 
@@ -19,16 +18,16 @@ class DOMException(Exception):
 
     # Definition group `ExceptionCode`
     # An integer indicating the type of error generated.
-    INDEX_SIZE_ERR: Final[c_ushort] = 1
-    DOMSTRING_SIZE_ERR: Final[c_ushort] = 2
-    HIERARCHY_REQUEST_ERR: Final[c_ushort] = 3
-    WRONG_DOCUMENT_ERR: Final[c_ushort] = 4
-    INVALID_CHARACTER_ERR: Final[c_ushort] = 5
-    NO_DATA_ALLOWED_ERR: Final[c_ushort] = 6
-    NO_MODIFICATION_ALLOWED_ERR: Final[c_ushort] = 7
-    NOT_FOUND_ERR: Final[c_ushort] = 8
-    NOT_SUPPORTED_ERR: Final[c_ushort] = 9
-    INUSE_ATTRIBUTE_ERR: Final[c_ushort] = 10
+    INDEX_SIZE_ERR: c_ushort = c_ushort(1)
+    DOMSTRING_SIZE_ERR: c_ushort = c_ushort(2)
+    HIERARCHY_REQUEST_ERR: c_ushort = c_ushort(3)
+    WRONG_DOCUMENT_ERR: c_ushort = c_ushort(4)
+    INVALID_CHARACTER_ERR: c_ushort = c_ushort(5)
+    NO_DATA_ALLOWED_ERR: c_ushort = c_ushort(6)
+    NO_MODIFICATION_ALLOWED_ERR: c_ushort = c_ushort(7)
+    NOT_FOUND_ERR: c_ushort = c_ushort(8)
+    NOT_SUPPORTED_ERR: c_ushort = c_ushort(9)
+    INUSE_ATTRIBUTE_ERR: c_ushort = c_ushort(10)
 
     def __init__(self, error_code: c_ushort, *args: object) -> None:
         super().__init__(*args)
