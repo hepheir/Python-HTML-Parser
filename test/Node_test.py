@@ -2,18 +2,17 @@ import unittest
 
 from w3.dom import DOMException
 from w3.dom import Node
-from w3.dom import NodeType
 
 
 def _create_document_node():
-    return Node(node_type=NodeType.DOCUMENT_NODE,
+    return Node(node_type=Node.DOCUMENT_NODE,
                 node_name='#document',
                 owner_document=None)
 
 
 def _create_element_node(document: Node):
-    assert document.node_type == NodeType.DOCUMENT_NODE
-    return Node(node_type=NodeType.ELEMENT_NODE,
+    assert document.node_type == Node.DOCUMENT_NODE
+    return Node(node_type=Node.ELEMENT_NODE,
                 node_name='tagName',
                 owner_document=document)
 
@@ -21,11 +20,11 @@ def _create_element_node(document: Node):
 class TestDunder_Init(unittest.TestCase):
     def test_Default(self):
         # Creating document node.
-        document = Node(node_type=NodeType.DOCUMENT_NODE,
+        document = Node(node_type=Node.DOCUMENT_NODE,
                         node_name='#document',
                         owner_document=None,
                         read_only=False)
-        self.assertEqual(document.node_type, NodeType.DOCUMENT_NODE)
+        self.assertEqual(document.node_type, Node.DOCUMENT_NODE)
         self.assertEqual(document.node_name, '#document')
         self.assertEqual(document.node_value, '')
 
@@ -36,14 +35,14 @@ class TestProperty_NodeValue(unittest.TestCase):
         return super().setUp()
 
     def testGetter(self):
-        text = Node(node_type=NodeType.TEXT_NODE,
+        text = Node(node_type=Node.TEXT_NODE,
                     node_name='#text',
                     owner_document=self.document,
                     node_value='lorem ipsum')
         self.assertEqual(text.node_value, 'lorem ipsum')
 
     def testConstructor(self):
-        text = Node(node_type=NodeType.TEXT_NODE,
+        text = Node(node_type=Node.TEXT_NODE,
                     node_name='#text',
                     owner_document=self.document,
                     node_value='foo',
@@ -51,7 +50,7 @@ class TestProperty_NodeValue(unittest.TestCase):
         self.assertEqual(text.node_value, 'foo')
 
     def testSetter(self):
-        text = Node(node_type=NodeType.TEXT_NODE,
+        text = Node(node_type=Node.TEXT_NODE,
                     node_name='#text',
                     owner_document=self.document,
                     read_only=False)
@@ -59,7 +58,7 @@ class TestProperty_NodeValue(unittest.TestCase):
         self.assertEqual(text.node_value, 'bar')
 
     def testSetter_ReadOnly(self):
-        text = Node(node_type=NodeType.TEXT_NODE,
+        text = Node(node_type=Node.TEXT_NODE,
                     node_name='#text',
                     owner_document=self.document,
                     node_value='foo',
@@ -73,27 +72,27 @@ class TestProperty_NodeValue(unittest.TestCase):
         self.assertEqual(text.node_value, 'foo')
 
 
-class TestProperty_NodeType(unittest.TestCase):
+class TestProperty_Node(unittest.TestCase):
     def setUp(self) -> None:
         self.document = _create_document_node()
         return super().setUp()
 
     def testGetter(self):
-        for node_type in NodeType:
+        for node_type in Node:
             node = Node(node_type=node_type,
                         node_name='',
                         owner_document=self.document)
             self.assertEqual(node.node_type, node_type)
 
     def testSetter_CorrectTypes(self):
-        for node_type in NodeType:
+        for node_type in Node:
             with self.subTest(node_type=node_type):
                 Node(node_type=node_type,
                      node_name='',
                      owner_document=self.document)
 
     def testSetter_WrongTypes(self):
-        for node_type in [-1, None, 'hi', True, Node, NodeType, 'DOCUMENT_NODE']:
+        for node_type in [-1, None, 'hi', True, Node, Node, 'DOCUMENT_NODE']:
             with self.subTest(node_type=node_type):
                 with self.assertRaises((TypeError, ValueError)):
                     Node(node_type=node_type,
@@ -107,7 +106,7 @@ class TestProperty_ParentNode(unittest.TestCase):
         return super().setUp()
 
     def testConstrutor(self):
-        docfrag = Node(node_type=NodeType.DOCUMENT_FRAGMENT_NODE,
+        docfrag = Node(node_type=Node.DOCUMENT_FRAGMENT_NODE,
                        node_name='#document-fragment',
                        owner_document=self.document)
         self.assertIsNone(docfrag.parent_node)
@@ -205,7 +204,7 @@ class TestMethod_InsertBefore(unittest.TestCase):
         # <document>
         # ======================================
         parent_node = _create_element_node(self.document)
-        docfrag_node = Node(node_type=NodeType.DOCUMENT_FRAGMENT_NODE,
+        docfrag_node = Node(node_type=Node.DOCUMENT_FRAGMENT_NODE,
                             node_name='#document-fragment',
                             owner_document=self.document)
         first_child_node = _create_element_node(self.document)
@@ -248,7 +247,7 @@ class TestMethod_InsertBefore(unittest.TestCase):
         #     <new_child_node/>
         # <document>
         # ======================================
-        parent_node_readonly = Node(node_type=NodeType.ELEMENT_NODE,
+        parent_node_readonly = Node(node_type=Node.ELEMENT_NODE,
                                     node_name='tagName',
                                     owner_document=self.document,
                                     read_only=True)
@@ -330,7 +329,7 @@ class TestMethod_AppendChild(unittest.TestCase):
         # <document>
         # ======================================
         parent_node = _create_element_node(self.document)
-        docfrag_node = Node(node_type=NodeType.DOCUMENT_FRAGMENT_NODE,
+        docfrag_node = Node(node_type=Node.DOCUMENT_FRAGMENT_NODE,
                             node_name='#document-fragment',
                             owner_document=self.document)
         first_child_node = _create_element_node(self.document)
@@ -373,7 +372,7 @@ class TestMethod_AppendChild(unittest.TestCase):
         #     <new_child_node/>
         # <document>
         # ======================================
-        parent_node_readonly = Node(node_type=NodeType.ELEMENT_NODE,
+        parent_node_readonly = Node(node_type=Node.ELEMENT_NODE,
                                     node_name='tagName',
                                     owner_document=self.document,
                                     read_only=True)
@@ -446,7 +445,7 @@ class TestMethod_ReplaceChild(unittest.TestCase):
         #     <new_child_node/>
         # <document>
         # ======================================
-        parent_node_readonly = Node(node_type=NodeType.ELEMENT_NODE,
+        parent_node_readonly = Node(node_type=Node.ELEMENT_NODE,
                                     node_name='tagName',
                                     owner_document=self.document,
                                     read_only=True)
@@ -533,7 +532,7 @@ class TestMethod_RemoveChild(unittest.TestCase):
         # <document>
         # ======================================
         child_node = _create_element_node(self.document)
-        parent_node = Node(node_type=NodeType.ELEMENT_NODE,
+        parent_node = Node(node_type=Node.ELEMENT_NODE,
                            node_name='tagName',
                            owner_document=self.document,
                            child_nodes=[child_node],
