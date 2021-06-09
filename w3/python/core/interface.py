@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from ctypes import c_ushort, c_ulong
-from typing import Callable
+from typing import Callable, Optional
 
+from w3.python.core.exception import DOMException
 from w3.python.core.type import DOMString
 
 
@@ -73,23 +74,296 @@ class Node:
     DOCUMENT_FRAGMENT_NODE: c_ushort = c_ushort(11)
     NOTATION_NODE: c_ushort = c_ushort(12)
 
-    nodeName: DOMString
-    nodeValue: DOMString
-    nodeType: c_ushort
-    parentNode: Node
-    childNodes: NodeList
-    firstChild: Node
-    lastChild: Node
-    previousSibling: Node
-    nextSibling: Node
-    attributes: NamedNodeMap
-    ownerDocument: Document
-    insertBefore: Callable[[Node, Node], Node]
-    replaceChild: Callable[[Node, Node], Node]
-    removeChild: Callable[[Node], Node]
-    appendChild: Callable[[Node], Node]
-    hasChildNodes: Callable[[], bool]
-    cloneNodes: Callable[[bool], Node]
+    def __init__(self) -> None:
+        # Accessor about this node's modification
+        self._read_only: bool
+        # Accessors about this node's properties
+        self._node_type: c_ushort
+        self._node_name: DOMString
+        self._node_value: DOMString
+        self._attributes: NamedNodeMap
+        # Accessors about DOM Tree
+        self._owner_document: Optional[Document]
+        self._parent_node: Optional[Node]
+        self._next_sibling_node: Optional[Node]
+        self._prev_sibling_node: Optional[Node]
+        self._child_nodes: NodeList
+        # Methods typing hints
+        self.insertBefore: Callable[[Node, Node], Node]
+        self.replaceChild: Callable[[Node, Node], Node]
+        self.removeChild: Callable[[Node], Node]
+        self.appendChild: Callable[[Node], Node]
+        self.hasChildNodes: Callable[[], bool]
+        self.cloneNodes: Callable[[bool], Node]
+
+    def _getNodeName(self) -> DOMString:
+        """Indirect accessor to get the 'nodeName' property."""
+        return self._node_name
+
+    def _setNodeName(self, name: DOMString) -> None:
+        """Indirect accessor to set the 'nodeName' property."""
+        self._node_name = DOMString(name)
+
+    def _getNodeValue(self) -> DOMString:
+        """Indirect accessor to get the 'nodeValue' property.
+
+        Raises:
+            DOMException:
+            -   DOMSTRING_SIZE_ERR: Raised when it would return more characters than fit in a `DOMString` variable on the implementation platform.
+        """
+        # XXX: DOMException.DOMSTRING_SIZE_ERR was not taken into account.
+        return self._node_value
+
+    def _setNodeValue(self, value: DOMString) -> None:
+        """Indirect accessor to set the 'nodeValue' property."""
+        self._node_value = DOMString(value)
+
+    def _getNodeType(self) -> c_ushort:
+        """Indirect accessor to get the 'nodeType' property."""
+        return self._node_type
+
+    def _setNodeType(self, type: c_ushort) -> None:
+        """Indirect accessor to set the 'nodeType' property."""
+        self._node_type = c_ushort(type)
+
+    def _getParentNode(self) -> Node:
+        """Indirect accessor to get the 'parentNode' property."""
+        return self._parent_node
+
+    def _setParentNode(self, node: Optional[Node] = None) -> None:
+        """Indirect accessor to set the 'parentNode' property."""
+        self._parent_node = node
+
+    def _getChildNodes(self) -> NodeList:
+        """Indirect accessor to get the 'childNodes' property."""
+        return self._child_nodes
+
+    def _getFirstChild(self) -> Node:
+        """Indirect accessor to get the 'firstChild' property."""
+        raise NotImplementedError()
+
+    def _getLastChild(self) -> Node:
+        """Indirect accessor to get the 'lastChild' property."""
+        raise NotImplementedError()
+
+    def _getPreviousSibling(self) -> Node:
+        """Indirect accessor to get the 'previousSibling' property."""
+        return self._prev_sibling_node
+
+    def _getNextSibling(self) -> Node:
+        """Indirect accessor to get the 'nextSibling' property."""
+        return self._next_sibling_node
+
+    def _getAttributes(self) -> NamedNodeMap:
+        """Indirect accessor to get the 'attributes' property."""
+        return self._attributes
+
+    def _getOwnerDocument(self) -> Document:
+        """Indirect accessor to get the 'ownerDocument' property."""
+        return self._owner_document
+
+    def _setOwnerDocument(self, owner_document: Document) -> None:
+        """Indirect accessor to set the 'ownerDocument' property."""
+        self._owner_document = owner_document
+
+    @property
+    def nodeName(self) -> DOMString:
+        """The name of this node, depending on its type."""
+        return self._getNodeName()
+
+    @property
+    def nodeValue(self) -> DOMString:
+        """The value of this node, depending on its type.
+
+        Raises:
+            Exceptions on setting
+                DOMException:
+                    NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
+
+            Exceptions on retrieval
+                DOMException:
+                    DOMSTRING_SIZE_ERR: Raised when it would return more characters than fit in a `DOMString` variable on the implementation platform.
+        """
+        return self._getNodeValue()
+
+    @nodeValue.setter
+    def nodeValue(self, value: DOMString) -> None:
+        self._setNodeValue(value)
+
+    @property
+    def nodeType(self) -> c_ushort:
+        """A code representing the type of the underlying object."""
+        return self._getNodeType()
+
+    @property
+    def parentNode(self) -> Optional[Node]:
+        """The parent of this node.
+
+        All nodes, except `Document`, `DocumentFragment`, and `Attr` may have a parent.
+        However, if a node has just been created and not yet added to the tree, or if it has been removed from the tree, this is `None`.
+        """
+        return self._getParentNode()
+
+    @property
+    def childNodes(self) -> NodeList:
+        """A `NodeList` that contains all children of this node.
+
+        If there are no children, this is a `NodeList` containing no nodes.
+        The content of the returned `NodeList` is "live" in the sense that, for instance, changes to the children of the node object that it was created from are immediately reflected in the nodes returned by the `NodeList` accessors; it is not a static snapshot of the content of the node.
+        This is true for every `NodeList`, including the ones returned by the `getElementsByTagName` method.
+        """
+        return self._getChildNodes()
+
+    @property
+    def firstChild(self) -> Node:
+        """The first child of this node.
+
+        If there is no such node, this returns `null`."""
+        return self._getFirstChild()
+
+    @property
+    def lastChild(self) -> Node:
+        """The last child of this node.
+
+        If there is no such node, this returns `null`."""
+        return self._getLastChild()
+
+    @property
+    def previousSibling(self) -> Node:
+        """The node immediately preceding this node.
+
+        If there is no such node, this returns `null`."""
+        return self._getPreviousSibling()
+
+    @property
+    def nextSibling(self) -> Node:
+        """The node immediately following this node.
+
+        If there is no such node, this returns `None`.
+        """
+        return self._getNextSibling()
+
+    @property
+    def attributes(self) -> NamedNodeMap:
+        """A `NamedNodeMap` containing the attributes of this node (if it is an `Element`) or `None` otherwise.
+        """
+        return self._getAttributes()
+
+    @property
+    def ownerDocument(self) -> Document:
+        """The `Document` object associated with this node.
+
+        This is also the `Document` object used to create new nodes.
+        When this node is a `Document` this is `None`.
+        """
+        return self._getOwnerDocument()
+
+    def insertBefore(self, newChild: Node, refChild: Node) -> Node:
+        """Inserts the node `newChild` before the existing child node `refChild`.
+
+        If `refChild` is `None`, insert `newChild` at the end of the list of children.
+        If `newChild` is a `DocumentFragment` object, all of its children are inserted, in the same order, before `refChild`.
+        If the `newChild` is already in the tree, it is first removed.
+
+        Args:
+            newChild: The node to insert.
+            refChild: The reference node, i.e., the node before which the new node must be inserted.
+
+        Returns:
+            The node being inserted.
+
+        Raises:
+            DOMException:
+            -   HIERARCHY_REQUEST_ERR: Raised if this node is of a type that does not allow children of the type of the `newChild` node, or if the node to insert is one of this node's ancestors.
+            -   WRONG_DOCUMENT_ERR: Raised if `newChild` was created from a different document than the one that created this node.
+            -   NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+            -   NOT_FOUND_ERR: Raised if `refChild` is not a child of this node.
+        """
+        raise NotImplementedError()
+
+    def replaceChild(self, newChild: Node, oldChild: Node) -> Node:
+        """Replaces the child node `oldChild` with `newChild` in the list of children, and returns the `oldChild` node.
+
+        If the `newChild` is already in the tree, it is first removed.
+
+        Args:
+            newChild: The new node to put in the child list.
+            oldChild: The node being replaced in the list.
+
+        Returns:
+            The node replaced.
+
+        Raises:
+            DOMException:
+            -   HIERARCHY_REQUEST_ERR: Raised if this node is of a type that does not allow children of the type of the `newChild` node, or it the node to put in is one of this node's ancestors.
+            -   WRONG_DOCUMENT_ERR: Raised if `newChild` was created from a different document than the one that created this node.
+            -   NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+            -   NOT_FOUND_ERR: Raised if `oldChild` is not a child of this node.
+        """
+        raise NotImplementedError()
+
+    def removeChild(self, oldChild: Node) -> Node:
+        """Removes the child node indicated by `oldChild` from the list of children, and returns it.
+
+        Args:
+            oldChild: The node being removed.
+
+        Returns:
+            The node removed.
+
+        Raises:
+            DOMException:
+            -   NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+            -   NOT_FOUND_ERR: Raised if `oldChild` is not a child of this node.
+        """
+        raise NotImplementedError()
+
+    def appendChild(self, newChild: Node) -> Node:
+        """Adds the node `newChild` to the end of the list of children of this node.
+
+        If the `newChild` is already in the tree, it is first removed.
+
+        Args:
+            newChild: The node to add. If it is a `DocumentFragment` object, the entire contents of the document fragment are moved into the child list of this node
+
+        Returns:
+            The node added.
+
+        Raises:
+            DOMException:
+            -   HIERARCHY_REQUEST_ERR: Raised if this node is of a type that does not allow children of the type of the `newChild` node, or if the node to append is one of this node's ancestors.
+            -   WRONG_DOCUMENT_ERR: Raised if `newChild` was created from a different document than the one that created this node.
+            -   NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+        """
+        raise NotImplementedError()
+
+    def hasChildNodes(self) -> bool:
+        """This is a convenience method to allow easy determination of whether a node has any children.
+
+        Returns:
+            `True` if the node has any children, `False` if the node has no children.
+
+        This method has no parameters.
+        This method raises no exceptions.
+        """
+        raise NotImplementedError()
+
+    def cloneNode(self) -> Node:
+        """Returns a duplicate of this node, i.e., serves as a generic copy constructor for nodes.
+
+        The duplicate node has no parent (`parentNode` returns `None`.).
+        Cloning an `Element` copies all attributes and their values, including those generated by the XML processor to represent defaulted attributes, but this method does not copy any text it contains unless it is a deep clone, since the text is contained in a child `Text` node.
+        Cloning any other type of node simply returns a copy of this node.
+
+        Args:
+            deep: If `True`, recursively clone the subtree under the specified node; if `False`, clone only the node itself (and its attributes, if it is an `Element`).
+
+        Returns:
+            The duplicate node.
+
+        This method raises no exceptions.
+        """
+        raise NotImplementedError()
 
 
 class DocumentFragment(Node):
