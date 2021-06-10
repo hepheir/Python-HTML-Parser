@@ -142,10 +142,9 @@ class Node:
         """Accessor to get the `childNodes`property."""
         if self.parentNode is None:
             return None
-        siblingNodes = self.parentNode.childNodes
-        if siblingNodes.length == 0:
+        if not self.parentNode.hasChildNodes():
             return None
-        return siblingNodes.item(index)
+        return self.parentNode.childNodes.item(index)
 
     def _insert_child_node(self, index: c_ulong, node: Node) -> Node:
         raise NotImplementedError()
@@ -180,6 +179,9 @@ class Node:
     def _set_ownerDocument(self, owner_document: Document) -> None:
         """Indirect accessor to set the `ownerDocument` property."""
         self._owner_document = owner_document
+
+    def _hasChildNodes(self) -> bool:
+        return self.childNodes.length > 0
 
     @property
     def nodeName(self) -> DOMString:
@@ -361,7 +363,7 @@ class Node:
         This method has no parameters.
         This method raises no exceptions.
         """
-        raise NotImplementedError()
+        return self._hasChildNodes()
 
     def cloneNode(self) -> Node:
         """Returns a duplicate of this node, i.e., serves as a generic copy constructor for nodes.
