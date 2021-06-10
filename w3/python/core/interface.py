@@ -96,16 +96,16 @@ class Node:
         self.hasChildNodes: Callable[[], bool]
         self.cloneNodes: Callable[[bool], Node]
 
-    def _getNodeName(self) -> DOMString:
-        """Indirect accessor to get the 'nodeName' property."""
+    def _get_nodeName(self) -> DOMString:
+        """Indirect accessor to get the `nodeName` property."""
         return self._node_name
 
-    def _setNodeName(self, name: DOMString) -> None:
-        """Indirect accessor to set the 'nodeName' property."""
+    def _set_nodeName(self, name: DOMString) -> None:
+        """Indirect accessor to set the `nodeName` property."""
         self._node_name = DOMString(name)
 
-    def _getNodeValue(self) -> DOMString:
-        """Indirect accessor to get the 'nodeValue' property.
+    def _get_nodeValue(self) -> DOMString:
+        """Indirect accessor to get the `nodeValue` property.
 
         Raises:
             DOMException:
@@ -114,62 +114,62 @@ class Node:
         # XXX: DOMException.DOMSTRING_SIZE_ERR was not taken into account.
         return self._node_value
 
-    def _setNodeValue(self, value: DOMString) -> None:
-        """Indirect accessor to set the 'nodeValue' property."""
+    def _set_nodeValue(self, value: DOMString) -> None:
+        """Indirect accessor to set the `nodeValue` property."""
         self._node_value = DOMString(value)
 
-    def _getNodeType(self) -> c_ushort:
-        """Indirect accessor to get the 'nodeType' property."""
+    def _get_nodeType(self) -> c_ushort:
+        """Indirect accessor to get the `nodeType` property."""
         return self._node_type
 
-    def _setNodeType(self, type: c_ushort) -> None:
-        """Indirect accessor to set the 'nodeType' property."""
+    def _set_nodeType(self, type: c_ushort) -> None:
+        """Indirect accessor to set the `nodeType` property."""
         self._node_type = c_ushort(type)
 
-    def _getParentNode(self) -> Node:
-        """Indirect accessor to get the 'parentNode' property."""
+    def _get_parentNode(self) -> Node:
+        """Indirect accessor to get the `parentNode` property."""
         return self._parent_node
 
-    def _setParentNode(self, node: Optional[Node] = None) -> None:
-        """Indirect accessor to set the 'parentNode' property."""
+    def _set_parentNode(self, node: Optional[Node] = None) -> None:
+        """Indirect accessor to set the `parentNode` property."""
         self._parent_node = node
 
-    def _getChildNodes(self) -> NodeList:
-        """Indirect accessor to get the 'childNodes' property."""
+    def _get_childNodes(self) -> NodeList:
+        """Indirect accessor to get the `childNodes` property."""
         return self._child_nodes
 
-    def _getFirstChild(self) -> Node:
-        """Indirect accessor to get the 'firstChild' property."""
+    def _get_firstChild(self) -> Optional[Node]:
+        """Indirect accessor to get the `firstChild` property."""
         raise NotImplementedError()
 
-    def _getLastChild(self) -> Node:
-        """Indirect accessor to get the 'lastChild' property."""
+    def _get_lastChild(self) -> Node:
+        """Indirect accessor to get the `lastChild` property."""
         raise NotImplementedError()
 
-    def _getPreviousSibling(self) -> Node:
-        """Indirect accessor to get the 'previousSibling' property."""
+    def _get_previousSibling(self) -> Node:
+        """Indirect accessor to get the `previousSibling` property."""
         return self._prev_sibling_node
 
-    def _getNextSibling(self) -> Node:
-        """Indirect accessor to get the 'nextSibling' property."""
+    def _get_nextSibling(self) -> Node:
+        """Indirect accessor to get the `nextSibling` property."""
         return self._next_sibling_node
 
-    def _getAttributes(self) -> NamedNodeMap:
-        """Indirect accessor to get the 'attributes' property."""
+    def _get_attributes(self) -> NamedNodeMap:
+        """Indirect accessor to get the `attributes` property."""
         return self._attributes
 
-    def _getOwnerDocument(self) -> Document:
-        """Indirect accessor to get the 'ownerDocument' property."""
+    def _get_ownerDocument(self) -> Document:
+        """Indirect accessor to get the `ownerDocument` property."""
         return self._owner_document
 
-    def _setOwnerDocument(self, owner_document: Document) -> None:
-        """Indirect accessor to set the 'ownerDocument' property."""
+    def _set_ownerDocument(self, owner_document: Document) -> None:
+        """Indirect accessor to set the `ownerDocument` property."""
         self._owner_document = owner_document
 
     @property
     def nodeName(self) -> DOMString:
         """The name of this node, depending on its type."""
-        return self._getNodeName()
+        return self._get_nodeName()
 
     @property
     def nodeValue(self) -> DOMString:
@@ -184,16 +184,16 @@ class Node:
                 DOMException:
                     DOMSTRING_SIZE_ERR: Raised when it would return more characters than fit in a `DOMString` variable on the implementation platform.
         """
-        return self._getNodeValue()
+        return self._get_nodeValue()
 
     @nodeValue.setter
     def nodeValue(self, value: DOMString) -> None:
-        self._setNodeValue(value)
+        self._set_nodeValue(value)
 
     @property
     def nodeType(self) -> c_ushort:
         """A code representing the type of the underlying object."""
-        return self._getNodeType()
+        return self._get_nodeType()
 
     @property
     def parentNode(self) -> Optional[Node]:
@@ -202,7 +202,7 @@ class Node:
         All nodes, except `Document`, `DocumentFragment`, and `Attr` may have a parent.
         However, if a node has just been created and not yet added to the tree, or if it has been removed from the tree, this is `None`.
         """
-        return self._getParentNode()
+        return self._get_parentNode()
 
     @property
     def childNodes(self) -> NodeList:
@@ -212,28 +212,28 @@ class Node:
         The content of the returned `NodeList` is "live" in the sense that, for instance, changes to the children of the node object that it was created from are immediately reflected in the nodes returned by the `NodeList` accessors; it is not a static snapshot of the content of the node.
         This is true for every `NodeList`, including the ones returned by the `getElementsByTagName` method.
         """
-        return self._getChildNodes()
+        return self._get_childNodes()
 
     @property
     def firstChild(self) -> Node:
         """The first child of this node.
 
         If there is no such node, this returns `null`."""
-        return self._getFirstChild()
+        return self._get_firstChild()
 
     @property
     def lastChild(self) -> Node:
         """The last child of this node.
 
         If there is no such node, this returns `null`."""
-        return self._getLastChild()
+        return self._get_lastChild()
 
     @property
     def previousSibling(self) -> Node:
         """The node immediately preceding this node.
 
         If there is no such node, this returns `null`."""
-        return self._getPreviousSibling()
+        return self._get_previousSibling()
 
     @property
     def nextSibling(self) -> Node:
@@ -241,13 +241,13 @@ class Node:
 
         If there is no such node, this returns `None`.
         """
-        return self._getNextSibling()
+        return self._get_nextSibling()
 
     @property
     def attributes(self) -> NamedNodeMap:
         """A `NamedNodeMap` containing the attributes of this node (if it is an `Element`) or `None` otherwise.
         """
-        return self._getAttributes()
+        return self._get_attributes()
 
     @property
     def ownerDocument(self) -> Document:
@@ -256,7 +256,7 @@ class Node:
         This is also the `Document` object used to create new nodes.
         When this node is a `Document` this is `None`.
         """
-        return self._getOwnerDocument()
+        return self._get_ownerDocument()
 
     def insertBefore(self, newChild: Node, refChild: Node) -> Node:
         """Inserts the node `newChild` before the existing child node `refChild`.
