@@ -147,6 +147,12 @@ class Node:
             return None
         return siblingNodes.item(index)
 
+    def _insert_child_node(self, index: c_ulong, node: Node) -> Node:
+        raise NotImplementedError()
+
+    def _get_index_of_child_node(self, childNode: Node) -> c_ulong:
+        raise NotImplementedError()
+
     def _get_firstChild(self) -> Optional[Node]:
         """Indirect accessor to get the `firstChild` property."""
         return self._get_child_node(0)
