@@ -138,13 +138,22 @@ class Node:
         """Indirect accessor to get the `childNodes` property."""
         return self._child_nodes
 
+    def _get_child_node(self, index: c_ulong) -> Optional[Node]:
+        """Accessor to get the `childNodes`property."""
+        if self.parentNode is None:
+            return None
+        siblingNodes = self.parentNode.childNodes
+        if siblingNodes.length == 0:
+            return None
+        return siblingNodes.item(index)
+
     def _get_firstChild(self) -> Optional[Node]:
         """Indirect accessor to get the `firstChild` property."""
-        raise NotImplementedError()
+        return self._get_child_node(0)
 
     def _get_lastChild(self) -> Node:
         """Indirect accessor to get the `lastChild` property."""
-        raise NotImplementedError()
+        return self._get_child_node(self.childNodes.length-1)
 
     def _get_previousSibling(self) -> Node:
         """Indirect accessor to get the `previousSibling` property."""
