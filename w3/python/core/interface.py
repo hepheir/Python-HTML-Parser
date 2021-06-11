@@ -146,10 +146,10 @@ class Node:
             return None
         return self.parentNode.childNodes.item(index)
 
-    def _insert_child_node(self, index: c_ulong, node: Node) -> Node:
+    def _insert_child_node(self, index: c_ulong, new_child: Node) -> Node:
         raise NotImplementedError()
 
-    def _get_index_of_child_node(self, childNode: Node) -> c_ulong:
+    def _get_index_of_child_node(self, child: Node) -> c_ulong:
         raise NotImplementedError()
 
     def _get_firstChild(self) -> Optional[Node]:
