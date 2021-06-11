@@ -183,6 +183,22 @@ class Node:
     def _hasChildNodes(self) -> bool:
         return self.childNodes.length > 0
 
+    def _check_HIERARCHY_REQUEST_ERR(self, node: Node) -> None:
+        # Should be checked on subclasses.
+        raise NotImplementedError()
+
+    def _check_WRONG_DOCUMENT_ERR(self, node: Node) -> None:
+        if node.ownerDocument is not self.ownerDocument:
+            raise DOMException(DOMException.WRONG_DOCUMENT_ERR)
+
+    def _check_NO_MODIFICATION_ALLOWED_ERR(self) -> None:
+        if self._read_only:
+            raise DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR)
+
+    def _check_NOT_FOUND_ERR(self, node: Node) -> None:
+        if node not in self.childNodes:
+            raise DOMException(DOMException.NOT_FOUND_ERR)
+
     @property
     def nodeName(self) -> DOMString:
         """The name of this node, depending on its type."""
