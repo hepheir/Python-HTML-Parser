@@ -180,6 +180,18 @@ class Node:
         """Indirect accessor to set the `ownerDocument` property."""
         self._owner_document = owner_document
 
+    def _appendChild(self, new_child: Node) -> Node:
+        if new_child.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
+            for grand_child_node in new_child.childNodes:
+                self._appendChild(grand_child_node)
+        else:
+            self._check_NO_MODIFICATION_ALLOWED_ERR()
+            self._check_WRONG_DOCUMENT_ERR(new_child)
+            self._check_HIERARCHY_REQUEST_ERR(new_child)
+            # XXX
+            raise NotImplementedError()
+        return new_child
+
     def _hasChildNodes(self) -> bool:
         return self.childNodes.length > 0
 
@@ -368,7 +380,7 @@ class Node:
             -   WRONG_DOCUMENT_ERR: Raised if `newChild` was created from a different document than the one that created this node.
             -   NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
         """
-        raise NotImplementedError()
+        return self._appendChild(newChild)
 
     def hasChildNodes(self) -> bool:
         """This is a convenience method to allow easy determination of whether a node has any children.
